@@ -1,0 +1,108 @@
+{
+  "common": {
+    "appName": "Bikin Stiker Admin",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "email": "Email",
+    "password": "Password",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "actions": "Actions"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "llmConfig": "LLM Config",
+    "llmLogs": "LLM Logs",
+    "presets": "Preset Styles"
+  },
+  "login": {
+    "title": "Admin Login",
+    "subtitle": "Only allowlisted emails can sign in",
+    "emailPlaceholder": "admin@example.com",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Sign In",
+    "error": "Sign-in failed. Check email/password.",
+    "notAdmin": "This email has no admin access.",
+    "success": "Signed in"
+  },
+  "dashboard": {
+    "title": "App Overview",
+    "subtitle": "Bikin Stiker operational summary",
+    "totalUsers": "Total Users",
+    "newUsers7d": "New Users (7 days)",
+    "newUsers30d": "New Users (30 days)",
+    "totalGenerations": "Total Sticker Generations",
+    "successRate": "Success Rate",
+    "generations7d": "Generations 7d",
+    "generations30d": "Generations 30d",
+    "creditsCirculating": "Credits in Circulation (balance)",
+    "avgLatency": "Avg Latency",
+    "recentGenerations": "Recent Generations",
+    "byProvider": "By Provider",
+    "range7d": "7 days",
+    "range30d": "30 days"
+  },
+  "users": {
+    "title": "User Management",
+    "subtitle": "Registered users",
+    "searchPlaceholder": "Search email or ID",
+    "columns": {
+      "email": "Email",
+      "balance": "Balance",
+      "tier": "Tier",
+      "created": "Created"
+    },
+    "detail": "User Detail",
+    "wallet": "Wallet",
+    "subscription": "Subscription",
+    "recentActivity": "Recent Activity",
+    "noData": "No data yet"
+  },
+  "llmConfig": {
+    "title": "LLM Configuration",
+    "subtitle": "Manage reasoning & image generation providers",
+    "reasoning": "Reasoning (Mistral)",
+    "image": "Image Generation",
+    "provider": "Provider",
+    "model": "Model",
+    "priority": "Priority",
+    "active": "Active",
+    "timeout": "Timeout (ms)",
+    "fallback": "Fallback",
+    "edit": "Edit",
+    "masked": "•••••••• (enter to update)",
+    "saveSuccess": "Configuration saved",
+    "view": { "list": "List", "card": "Card" },
+    "filters": { "route": "Route", "provider": "Provider", "active": "Status", "q": "Search", "clear": "Clear" }
+  },
+  "llmLogs": {
+    "title": "LLM Logs",
+    "subtitle": "Trace of reasoning & image generation calls",
+    "attemptLogs": "Attempt Logs (Image)",
+    "enhancementLogs": "Enhancement Logs (Reasoning)",
+    "provider": "Provider",
+    "status": "Status",
+    "latency": "Latency",
+    "created": "Time"
+  },
+  "presets": {
+    "title": "Preset Styles",
+    "subtitle": "Manage sticker styles",
+    "create": "Add Preset",
+    "edit": "Edit Preset",
+    "label": "Label",
+    "id": "ID",
+    "emoji": "Emoji",
+    "role": "Role",
+    "sortOrder": "Order",
+    "active": "Active",
+    "validFrom": "Valid From",
+    "validUntil": "Valid Until",
+    "styleDescriptor": "Style Descriptor",
+    "reasoningGuidance": "Reasoning Guidance",
+    "costOverride": "Cost Override"
+  }
+}

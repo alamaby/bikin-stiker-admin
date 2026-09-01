@@ -1,0 +1,108 @@
+{
+  "common": {
+    "appName": "Bikin Stiker Admin",
+    "signIn": "Masuk",
+    "signOut": "Keluar",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "loading": "Memuat...",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "search": "Cari",
+    "actions": "Aksi"
+  },
+  "nav": {
+    "dashboard": "Dasbor",
+    "users": "Pengguna",
+    "llmConfig": "Konfigurasi LLM",
+    "llmLogs": "Log LLM",
+    "presets": "Preset Style"
+  },
+  "login": {
+    "title": "Login Admin",
+    "subtitle": "Hanya email yang diizinkan dapat masuk",
+    "emailPlaceholder": "admin@contoh.com",
+    "passwordPlaceholder": "••••••••",
+    "submit": "Masuk",
+    "error": "Gagal masuk. Periksa email/kata sandi.",
+    "notAdmin": "Email tidak memiliki akses admin.",
+    "success": "Berhasil masuk"
+  },
+  "dashboard": {
+    "title": "Ringkasan Aplikasi",
+    "subtitle": "Gambaran operasional Bikin Stiker",
+    "totalUsers": "Total Pengguna",
+    "newUsers7d": "Pengguna Baru (7 hari)",
+    "newUsers30d": "Pengguna Baru (30 hari)",
+    "totalGenerations": "Total Generasi Stiker",
+    "successRate": "Tingkat Keberhasilan",
+    "generations7d": "Generasi 7 hari",
+    "generations30d": "Generasi 30 hari",
+    "creditsCirculating": "Kredit Beredar (balance)",
+    "avgLatency": "Latensi Rata-rata",
+    "recentGenerations": "Generasi Terbaru",
+    "byProvider": "Berdasarkan Provider",
+    "range7d": "7 hari",
+    "range30d": "30 hari"
+  },
+  "users": {
+    "title": "Manajemen Pengguna",
+    "subtitle": "Daftar pengguna terdaftar",
+    "searchPlaceholder": "Cari email atau ID",
+    "columns": {
+      "email": "Email",
+      "balance": "Saldo",
+      "tier": "Tier",
+      "created": "Terdaftar"
+    },
+    "detail": "Detail Pengguna",
+    "wallet": "Dompet",
+    "subscription": "Langganan",
+    "recentActivity": "Aktivitas Terbaru",
+    "noData": "Belum ada data"
+  },
+  "llmConfig": {
+    "title": "Konfigurasi LLM",
+    "subtitle": "Kelola provider reasoning & generate gambar",
+    "reasoning": "Reasoning (Mistral)",
+    "image": "Generate Gambar",
+    "provider": "Provider",
+    "model": "Model",
+    "priority": "Prioritas",
+    "active": "Aktif",
+    "timeout": "Timeout (ms)",
+    "fallback": "Fallback",
+    "edit": "Edit",
+    "masked": "•••••••• (ganti untuk update)",
+    "saveSuccess": "Konfigurasi disimpan",
+    "view": { "list": "List", "card": "Kartu" },
+    "filters": { "route": "Route", "provider": "Provider", "active": "Status", "q": "Cari", "clear": "Bersihkan" }
+  },
+  "llmLogs": {
+    "title": "Log LLM",
+    "subtitle": "Jejak pemanggilan reasoning & image generation",
+    "attemptLogs": "Attempt Logs (Image)",
+    "enhancementLogs": "Enhancement Logs (Reasoning)",
+    "provider": "Provider",
+    "status": "Status",
+    "latency": "Latensi",
+    "created": "Waktu"
+  },
+  "presets": {
+    "title": "Preset Style",
+    "subtitle": "Kelola style stiker",
+    "create": "Tambah Preset",
+    "edit": "Edit Preset",
+    "label": "Label",
+    "id": "ID",
+    "emoji": "Emoji",
+    "role": "Role",
+    "sortOrder": "Urutan",
+    "active": "Aktif",
+    "validFrom": "Valid Dari",
+    "validUntil": "Valid Sampai",
+    "styleDescriptor": "Style Descriptor",
+    "reasoningGuidance": "Reasoning Guidance",
+    "costOverride": "Cost Override"
+  }
+}

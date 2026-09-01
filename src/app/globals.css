@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 7%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 7%;
+  --primary: 201 100% 35%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 38 100% 45%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 14 100% 42%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 201 100% 35%;
+  --radius: 0.625rem;
+}
+
+.dark {
+  --background: 0 0% 4%;
+  --foreground: 0 0% 93%;
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 93%;
+  --primary: 201 100% 42%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 38 100% 50%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 14%;
+  --muted-foreground: 0 0% 63%;
+  --accent: 0 0% 14%;
+  --accent-foreground: 0 0% 93%;
+  --destructive: 14 100% 42%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14%;
+  --input: 0 0% 14%;
+  --ring: 201 100% 42%;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* { border-color: hsl(var(--border)); }
+body { background: hsl(var(--background)); color: hsl(var(--foreground)); font-family: var(--font-geist-sans), system-ui, sans-serif; }
