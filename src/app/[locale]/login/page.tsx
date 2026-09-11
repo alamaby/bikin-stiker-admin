@@ -34,8 +34,11 @@ export default function LoginPage() {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
       if (!data.user) throw new Error("No user");
-      // Hard client-side whitelist check for UX (middleware also enforces)
-      const allow = ["alam.aby.b@gmail.com", "alamaby@gmail.com"];
+      // Client-side whitelist check for UX (middleware also enforces)
+      const allow = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+        .split(",")
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
       if (!allow.includes((data.user.email ?? "").toLowerCase())) {
         await supabase.auth.signOut();
         setError(t("notAdmin"));

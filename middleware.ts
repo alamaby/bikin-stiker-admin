@@ -75,7 +75,7 @@ export async function middleware(request: NextRequest) {
         loginUrl.searchParams.set("next", pathname);
         return NextResponse.redirect(loginUrl);
       }
-      const allow = (process.env.ADMIN_EMAILS ?? "alam.aby.b@gmail.com,alamaby@gmail.com")
+      const allow = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? process.env.ADMIN_EMAILS ?? "")
         .split(",")
         .map((s) => s.trim().toLowerCase())
         .filter(Boolean);
