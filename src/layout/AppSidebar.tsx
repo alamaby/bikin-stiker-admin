@@ -19,8 +19,13 @@ type NavItem = {
 
 export default function AppSidebar({ locale }: { locale: string }) {
   const t = useTranslations("nav");
-  const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
+  const { isExpanded, isMobileOpen, isHovered, setIsHovered, toggleMobileSidebar } = useSidebar();
   const pathname = usePathname();
+
+  // Close the mobile drawer after navigation (desktop unaffected: isMobileOpen is always false there).
+  const closeMobile = () => {
+    if (isMobileOpen) toggleMobileSidebar();
+  };
 
   const navItems: NavItem[] = [
     { icon: <LayoutDashboard className="size-5" />, name: t("dashboard"), path: buildLocaleHref(locale, "/") },
@@ -41,6 +46,7 @@ export default function AppSidebar({ locale }: { locale: string }) {
         <li key={nav.name}>
           <Link
             href={nav.path}
+            onClick={closeMobile}
             className={`menu-item group ${isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"} ${
               !isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"
             }`}
