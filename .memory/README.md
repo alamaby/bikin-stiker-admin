@@ -1,6 +1,6 @@
 # Project Memory
 
-Last updated: 2026-09-13 malam (WIB)
+Last updated: 2026-09-13 malam (WIB, sesi test suite)
 Format version: 1
 
 ## Current State
@@ -8,9 +8,9 @@ Format version: 1
 - Shell: AppSidebar (MENU/MANAJEMEN, collapsible 290/90px, auto-close drawer di mobile) + AppHeader sticky (search ⌘K redirect, locale ID/EN, theme, lonceng, user) + Backdrop + AdminShell.
 - Tema penuh: font Outfit, ThemeContext (light|dark + localStorage), token brand/gray/success/error/warning, utilitas menu-item.
 - 4 halaman tabel (Users, LLM Config, LLM Logs, Presets) + dashboard + login/unauthorized sudah gaya TailAdmin; logic Supabase/RSC/middleware tidak berubah; bug locale next-intl pre-existing diperbaiki (setRequestLocale).
-- Migrasi utama ter-commit + push (`adc2611`, `e5d99f7`). Review-vs-plan selesai;
-  perbaikan review (switchLocale, dead context/files, i18n header/filter/tabel)
-  menunggu commit lanjutan ini.
+- Migrasi utama ter-commit + push (`adc2611`, `e5d99f7`, `7236b05`).
+- Test suite Vitest (Fase 1–3) selesai: 14 files / 72 tests hijau; `npm test` jadi gate
+  verifikasi; Playwright E2E masih TODO. Lihat `.memory/2026-09-13/test-suite-vitest.md`.
 - `npm run lint` bersih; `npm run build` lolos (13 routes, login/unauthorized SSG
   per-locale); verifikasi browser ID+EN+mobile selesai.
 
@@ -30,3 +30,4 @@ Format version: 1
 - [2026-09-13 TailAdmin layout migration](2026-09-13/121300-tailadmin-layout-migration.md)
 - [2026-09-13 Follow-up: mobile + EN verification fixes](2026-09-13/followup-mobile-en-verification.md)
 - [2026-09-13 Review: implementation vs plan](2026-09-13/review-tailadmin-vs-plan.md)
+- [2026-09-13 Test suite Vitest](2026-09-13/test-suite-vitest.md)

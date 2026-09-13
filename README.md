@@ -73,6 +73,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...placeholder
 - Role granular `admin_users` table
 - Preset image preview upload
 - Charts 30d & pagination lanjutan
+- E2E Playwright smoke (TODO): login sukses/gagal → dashboard, switch locale mempertahankan page+query, search header → `/llm-logs?q=`, mobile drawer buka/navigasi/tutup, dark mode persist via localStorage
 
 ## Keamanan
 - `SUPABASE_SECRET_KEY` hanya di server (`server-only`), tidak pernah ke client
@@ -83,5 +84,9 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...placeholder
 ## Verifikasi
 ```bash
 npm run lint
+npm test
 npm run build
 ```
+
+Test suite Vitest (`tests/`): unit helpers + server actions + middleware (env `node`),
+komponen TailAdmin (env `jsdom`). Lihat `plans/2026-09-13-test-suite-plan.md`.
