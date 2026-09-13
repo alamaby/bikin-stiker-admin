@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Loader2, ShieldOff, ShieldCheck } from "lucide-react";
 import { suspendUser, unsuspendUser, type ActionState } from "./actions";
 import Alert from "@/components/ui/alert/Alert";
@@ -42,6 +43,7 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
   const [showSuspendToast, setShowSuspendToast] = React.useState(false);
   const [showUnsuspendToast, setShowUnsuspendToast] = React.useState(false);
   const [reason, setReason] = React.useState("");
+  const t = useTranslations("common");
 
   React.useEffect(() => {
     if (suspendState.message) {
@@ -72,7 +74,7 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
         {showUnsuspendToast && unsuspendState.message && (
           <Alert
             variant={unsuspendState.success ? "success" : "error"}
-            title={unsuspendState.success ? "Berhasil" : "Gagal"}
+            title={unsuspendState.success ? t("successTitle") : t("errorTitle")}
             message={unsuspendState.message}
             onClose={() => setShowUnsuspendToast(false)}
           />
@@ -90,7 +92,7 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
       {showSuspendToast && suspendState.message && (
         <Alert
           variant={suspendState.success ? "success" : "error"}
-          title={suspendState.success ? "Berhasil" : "Gagal"}
+          title={suspendState.success ? t("successTitle") : t("errorTitle")}
           message={suspendState.message}
           onClose={() => setShowSuspendToast(false)}
         />

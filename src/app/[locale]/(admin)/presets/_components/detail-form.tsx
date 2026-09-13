@@ -5,6 +5,7 @@ import * as React from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { upsertPresetWithState, type ActionState } from "../actions";
 import Alert from "@/components/ui/alert/Alert";
@@ -32,6 +33,7 @@ function SubmitButton({ label }: { label: string }) {
 export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: string; isNew?: boolean }) {
   const [state, formAction, isPending] = useActionState(upsertPresetWithState, initialState);
   const [showToast, setShowToast] = React.useState(false);
+  const t = useTranslations("common");
 
   React.useEffect(() => {
     if (state.message) {
@@ -49,7 +51,7 @@ export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: st
         <div className="mb-4">
           <Alert
             variant={state.success ? "success" : "error"}
-            title={state.success ? "Berhasil" : "Gagal"}
+            title={state.success ? t("successTitle") : t("errorTitle")}
             message={state.message}
             onClose={() => setShowToast(false)}
           />

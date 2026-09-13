@@ -170,7 +170,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
           <div className="flex items-center justify-between px-6 py-5">
             <h3 className="text-base font-medium text-gray-800 dark:text-white/90">{t("recentGenerations")}</h3>
             <Link href={buildLocaleHref(locale, "/llm-logs")} className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline dark:text-brand-400">
-              <ScrollText className="size-4" /> {t("title") === "Ringkasan Aplikasi" ? "Semua log" : "All logs"}
+              <ScrollText className="size-4" /> {t("allLogs")}
             </Link>
           </div>
           <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">

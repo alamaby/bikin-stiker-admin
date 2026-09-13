@@ -105,6 +105,7 @@ export default async function LlmConfigPage({
   const perPage = view === "list" ? 10 : 12;
   const t = await getTranslations({ locale, namespace: "llmConfig" });
   const tc = await getTranslations({ locale, namespace: "common" });
+  const tf = await getTranslations({ locale, namespace: "filters" });
   const result = await getConfigs({ route, provider, active, q, sort, order, page, perPage });
   const providers = await getDistinctProviders();
 
@@ -138,7 +139,7 @@ export default async function LlmConfigPage({
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-              {total} configs · page {page}/{totalPages}
+              {total} configs · {tf("page")} {page}/{totalPages}
             </span>
             <div className="hidden gap-1.5 sm:flex">
               <Link href={preserve({ sort: "priority", order: "asc", page: "1" })} className={toolbarBtn(sort === "priority")}>
@@ -294,7 +295,7 @@ export default async function LlmConfigPage({
             totalPages={totalPages}
             total={total}
             pageSize={perPage}
-            summary={(tot, shown, pg) => `${tot} total · ${shown} on page ${pg}`}
+            summary={(tot, shown, pg) => `${tot} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
             getHref={(p) => preserve({ page: String(p) })}
           />
         </div>

@@ -112,7 +112,7 @@ function LoginCard() {
             autoComplete="current-password"
           />
         </div>
-        {error && <Alert variant="error" title="Login gagal" message={error} onClose={() => setError(null)} />}
+        {error && <Alert variant="error" title={t("failedTitle")} message={error} onClose={() => setError(null)} />}
         <button
           type="submit"
           disabled={loading}

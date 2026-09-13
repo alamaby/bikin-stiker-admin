@@ -5,6 +5,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { LogOut, ChevronDown } from "lucide-react";
 import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 import { createClient } from "@/lib/supabase/client";
@@ -13,6 +14,7 @@ export default function UserDropdown({ userEmail, locale }: { userEmail: string 
   const [isOpen, setIsOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const router = useRouter();
+  const t = useTranslations("common");
 
   function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation();
@@ -64,7 +66,7 @@ export default function UserDropdown({ userEmail, locale }: { userEmail: string 
           className="mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 text-theme-sm hover:bg-gray-100 hover:text-gray-700 group dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300 disabled:opacity-50"
         >
           <LogOut className="size-5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400" />
-          {signingOut ? "Signing out..." : "Sign out"}
+          {signingOut ? t("signingOut") : t("signOut")}
         </button>
       </Dropdown>
     </div>

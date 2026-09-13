@@ -135,6 +135,7 @@ export default async function PresetsPage({
   const perPage = view === "list" ? 10 : 12;
   const t = await getTranslations({ locale, namespace: "presets" });
   const tc = await getTranslations({ locale, namespace: "common" });
+  const tf = await getTranslations({ locale, namespace: "filters" });
 
   const result = await getPresets({ q, role, active, valid, sort, order, page, perPage });
   const total = result?.total ?? 0;
@@ -154,7 +155,7 @@ export default async function PresetsPage({
           <p className="-mt-4 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
         </div>
         <Link href={buildLocaleHref(locale, "/presets/new")} className={`${primaryBtnLink()} -mt-2 mb-6`}>
-          <Plus className="size-4" /> Tambah Preset
+          <Plus className="size-4" /> {t("create")}
         </Link>
       </div>
 
@@ -162,7 +163,7 @@ export default async function PresetsPage({
         <PresetFilterBar locale={locale} initial={{ q, role, active, valid }} />
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-            {total} preset · hal {page}/{totalPages} · sort {sort} {order}
+            {total} preset · {tf("page")} {page}/{totalPages} · {tf("sort")} {sort} {order}
           </span>
           <div className="flex flex-wrap items-center gap-1.5">
             <Link href={buildUrl(locale, { q, role, active, valid, view, sort: "sort_order", order: "asc", page: "1" })} className={toolbarBtn(sort === "sort_order")}>
@@ -302,7 +303,7 @@ export default async function PresetsPage({
             totalPages={totalPages}
             total={total}
             pageSize={perPage}
-            summary={(tot, shown, pg) => `${tot} total · ${shown} di hal ${pg}`}
+            summary={(tot, shown, pg) => `${tot} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
             getHref={(p) => buildUrl(locale, { q, role, active, valid, view, sort, order, page: String(p) })}
           />
         </div>

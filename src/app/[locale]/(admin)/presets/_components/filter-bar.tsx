@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Search, Loader2 } from "lucide-react";
 import { FormLabel, TextInput, SelectInput } from "@/components/form/controls";
 import { filterGrid4, filterActions, filterSubmitBtn, toolbarBtn } from "@/components/tables/table-styles";
@@ -14,6 +15,7 @@ export function PresetFilterBar({
   initial: { q: string; role: string; active: string; valid: string };
 }) {
   const router = useRouter();
+  const t = useTranslations("filters");
   const [pending, startTransition] = React.useTransition();
   const [q, setQ] = React.useState(initial.q);
   const [role, setRole] = React.useState(initial.role);
@@ -40,41 +42,41 @@ export function PresetFilterBar({
   return (
     <form onSubmit={handleSubmit} className={`${filterGrid4} lg:grid-cols-5`}>
       <div>
-        <FormLabel>Cari</FormLabel>
+        <FormLabel>{t("searchLabel")}</FormLabel>
         <TextInput value={q} onChange={(e) => setQ(e.target.value)} placeholder="id / label / emoji / deskripsi" disabled={pending} />
       </div>
       <div>
-        <FormLabel>Role</FormLabel>
+        <FormLabel>{t("role")}</FormLabel>
         <SelectInput value={role} onChange={(e) => setRole(e.target.value)} disabled={pending}>
-          <option value="all">Semua</option>
+          <option value="all">{t("all")}</option>
           <option value="guest">guest</option>
           <option value="free">free</option>
           <option value="plus">plus</option>
         </SelectInput>
       </div>
       <div>
-        <FormLabel>Aktif</FormLabel>
+        <FormLabel>{t("active")}</FormLabel>
         <SelectInput value={active} onChange={(e) => setActive(e.target.value)} disabled={pending}>
-          <option value="all">Semua</option>
-          <option value="active">Aktif</option>
-          <option value="inactive">Nonaktif</option>
+          <option value="all">{t("all")}</option>
+          <option value="active">{t("active")}</option>
+          <option value="inactive">{t("inactive")}</option>
         </SelectInput>
       </div>
       <div>
-        <FormLabel>Jadwal</FormLabel>
+        <FormLabel>{t("schedule")}</FormLabel>
         <SelectInput value={valid} onChange={(e) => setValid(e.target.value)} disabled={pending}>
-          <option value="all">Semua</option>
-          <option value="active">Sedang aktif</option>
-          <option value="scheduled">Terjadwal</option>
-          <option value="expired">Kedaluwarsa</option>
+          <option value="all">{t("all")}</option>
+          <option value="active">{t("scheduledNow")}</option>
+          <option value="scheduled">{t("scheduledFuture")}</option>
+          <option value="expired">{t("expired")}</option>
         </SelectInput>
       </div>
       <div className={filterActions}>
         <button type="submit" className={filterSubmitBtn} disabled={pending} aria-busy={pending}>
-          {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Filter
+          {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} {t("filter")}
         </button>
         <button type="button" className={toolbarBtn(false)} onClick={handleClear} disabled={pending}>
-          Clear
+          {t("clear")}
         </button>
       </div>
     </form>

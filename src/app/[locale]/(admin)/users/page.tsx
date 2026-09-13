@@ -145,6 +145,7 @@ export default async function UsersPage({
   const perPage = 15;
   const t = await getTranslations({ locale, namespace: "users" });
   const tc = await getTranslations({ locale, namespace: "common" });
+  const tf = await getTranslations({ locale, namespace: "filters" });
 
   const result = await getUsers({ q, tier, status, sort, order, page, perPage });
 
@@ -160,14 +161,14 @@ export default async function UsersPage({
         <UserFilterBar locale={locale} initial={{ q, tier, status }} />
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-            {result ? `${result.total} pengguna · hal ${result.page}/${result.totalPages}` : "—"} · sort {sort} {order}
+            {result ? `${result.total} ${tf("totalUsers")} · ${tf("page")} ${result.page}/${result.totalPages}` : "—"} · {tf("sort")} {sort} {order}
           </span>
           <div className="flex flex-wrap gap-1.5">
             <Link href={buildUrl(locale, { q, tier, status, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })} className={toolbarBtn(sort === "created_at")}>
-              Tanggal <ArrowUpDown className="size-3.5" />
+              {t("date")} <ArrowUpDown className="size-3.5" />
             </Link>
             <Link href={buildUrl(locale, { q, tier, status, sort: "balance", order: toggleOrder, page: "1" })} className={toolbarBtn(sort === "balance")}>
-              Saldo
+              {t("columns.balance")}
             </Link>
             <Link href={buildUrl(locale, { q, tier, status, sort, order: toggleOrder, page: "1" })} className={toolbarBtn(false)}>
               {order === "asc" ? "↑ asc" : "↓ desc"}
@@ -203,13 +204,13 @@ export default async function UsersPage({
                         </Link>
                       </TableCell>
                       <TableCell isHeader className={thCell}>{t("columns.tier")}</TableCell>
-                      <TableCell isHeader className={thCell}>Status</TableCell>
+                      <TableCell isHeader className={thCell}>{t("status")}</TableCell>
                       <TableCell isHeader className={thCell}>
                         <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
                           {t("columns.created")} <ArrowUpDown className="size-3.5" />
                         </Link>
                       </TableCell>
-                      <TableCell isHeader className={thCell}>Detail</TableCell>
+                      <TableCell isHeader className={thCell}>{t("detail")}</TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody className={tableBody}>
@@ -225,8 +226,8 @@ export default async function UsersPage({
                           <TailBadge color={u.tier === "plus" ? "primary" : "light"}>{u.tier}</TailBadge>
                         </TableCell>
                         <TableCell className={tdCell}>
-                          {u.isSuspended ? <TailBadge variant="solid" color="error">Suspended</TailBadge> : <TailBadge color="light">Aktif</TailBadge>}
-                          {u.isSuspended && u.banned_until && <span className={`${tdSub} mt-1 text-[11px]`}>sampai {new Date(u.banned_until).toLocaleDateString()}</span>}
+                          {u.isSuspended ? <TailBadge variant="solid" color="error">{tf("suspended")}</TailBadge> : <TailBadge color="light">{tf("active")}</TailBadge>}
+                          {u.isSuspended && u.banned_until && <span className={`${tdSub} mt-1 text-[11px]`}>{t("until")} {new Date(u.banned_until).toLocaleDateString()}</span>}
                         </TableCell>
                         <TableCell className={`${tdCell} text-xs`}>{u.created_at ? new Date(u.created_at).toLocaleDateString("id-ID") : "—"}</TableCell>
                         <TableCell className={tdCell}>
@@ -248,7 +249,7 @@ export default async function UsersPage({
               totalPages={result.totalPages}
               total={result.total}
               pageSize={perPage}
-              summary={(total, shown, pg) => `${total} total · ${shown} di hal ${pg}`}
+              summary={(total, shown, pg) => `${total} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
               getHref={(p) => buildUrl(locale, { q, tier, status, sort, order, page: String(p) })}
             />
           </div>

@@ -1,6 +1,6 @@
 # Bikin Stiker Admin
 
-Admin dashboard untuk mengoperasikan backend Supabase `bikinstiker` (Flutter). Dibuat dengan Next.js 15 + Supabase SSR + next-intl + next-themes. Host di Vercel Free Tier.
+Admin dashboard untuk mengoperasikan backend Supabase `bikinstiker` (Flutter). Dibuat dengan Next.js 16 + Supabase SSR + next-intl + TailAdmin layout. Host di Vercel Free Tier.
 
 ## Fitur Tahap Awal
 - **Login admin** email+password, whitelist `alam.aby.b@gmail.com`, `alamaby@gmail.com` (via `ADMIN_EMAILS` + middleware)
@@ -12,7 +12,7 @@ Admin dashboard untuk mengoperasikan backend Supabase `bikinstiker` (Flutter). D
 - Responsive mobile/tablet/desktop, i18n `id`/`en`, light/dark
 
 ## Stack
-Next.js 16.3.4 (App Router, RSC), React 19, TypeScript strict, Tailwind 4, shadcn/ui, next-intl, next-themes, Supabase SSR, Zod env, Vercel.
+Next.js 16.3.4 (App Router, RSC), React 19, TypeScript strict, Tailwind 4, TailAdmin layout (free-nextjs-admin-dashboard v2.3.0, MIT — port selektif di `src/layout/`, `src/context/`, `src/components/{header,common,ui}/`), next-intl, Supabase SSR, Zod env, Vercel.
 
 ## Struktur
 ```
@@ -34,7 +34,9 @@ Next.js 16.3.4 (App Router, RSC), React 19, TypeScript strict, Tailwind 4, shadc
 │   │           ├── llm-logs/page.tsx
 │   │           └── presets/page.tsx + actions.ts
 │   ├── lib/supabase/    # client/server/middleware helpers
-│   ├── components/      # ui + sidebar + theme
+│   ├── layout/          # AdminShell + AppSidebar + AppHeader + Backdrop (TailAdmin)
+│   ├── context/         # ThemeContext + SidebarContext (TailAdmin)
+│   ├── components/      # ui + header + common + tables + form
 │   ├── i18n/            # next-intl config
 │   └── env.ts           # Zod env validation
 ├── messages/id.json, en.json

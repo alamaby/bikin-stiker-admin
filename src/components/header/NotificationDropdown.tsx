@@ -5,6 +5,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Bell, AlertTriangle, XCircle } from "lucide-react";
 import { Dropdown } from "@/components/ui/dropdown/Dropdown";
 import { DropdownItem } from "@/components/ui/dropdown/DropdownItem";
@@ -27,6 +28,7 @@ export default function NotificationDropdown({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [seen, setSeen] = useState(false);
+  const t = useTranslations("header");
   const hasNew = items.length > 0 && !seen;
 
   function toggleDropdown() {
@@ -63,7 +65,7 @@ export default function NotificationDropdown({
       >
         <div className="mb-3 flex items-center justify-between border-b border-gray-100 pb-3 dark:border-gray-700">
           <h5 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Notification {items.length > 0 && <span className="text-sm font-normal text-gray-500">({items.length})</span>}
+            {t("notifications")} {items.length > 0 && <span className="text-sm font-normal text-gray-500">({items.length})</span>}
           </h5>
           <button onClick={toggleDropdown} className="dropdown-toggle text-gray-500 transition dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" aria-label="Close notifications">
             <XCircle className="size-6" />
@@ -72,7 +74,7 @@ export default function NotificationDropdown({
         <ul className="custom-scrollbar flex h-auto flex-col overflow-y-auto">
           {items.length === 0 && (
             <li className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-              No failed generations in the last 24h. All clear.
+              {t("noNotifications")}
             </li>
           )}
           {items.map((n) => (
@@ -110,7 +112,7 @@ export default function NotificationDropdown({
           onClick={closeDropdown}
           className="mt-3 block rounded-lg border border-gray-300 bg-white px-4 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
         >
-          View All Failed Logs
+          {t("viewAllFailed")}
         </Link>
       </Dropdown>
     </div>

@@ -11,13 +11,13 @@ export default async function UnauthorizedPage({ params }: { params: Promise<{ l
       <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-8">
         <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">403 – Unauthorized</h1>
         <div className="mt-4">
-          <Alert variant="error" title="Akses ditolak" message={t("notAdmin")} />
+          <Alert variant="error" title={t("forbiddenTitle")} message={t("notAdmin")} />
         </div>
         <Link
           href={buildLocaleHref(locale, "/login")}
           className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600"
         >
-          Back to login
+          {t("submit")}
         </Link>
       </div>
     </div>

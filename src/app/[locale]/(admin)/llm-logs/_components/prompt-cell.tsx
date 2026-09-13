@@ -1,9 +1,11 @@
 "use client";
 
 import * as React from "react";
+import { useTranslations } from "next-intl";
 import { toolbarBtn } from "@/components/tables/table-styles";
 
 export function PromptCell({ text, max = 80 }: { text: string; max?: number }) {
+  const t = useTranslations("common");
   const [expanded, setExpanded] = React.useState(false);
   const [copied, setCopied] = React.useState(false);
   if (!text) return <span className="text-gray-400">—</span>;
@@ -24,11 +26,11 @@ export function PromptCell({ text, max = 80 }: { text: string; max?: number }) {
       <div className="mt-1 flex gap-1">
         {isLong && (
           <button className={`${toolbarBtn(false)} h-6 px-2 text-xs`} onClick={() => setExpanded((v) => !v)}>
-            {expanded ? "Ciutkan" : "Lihat lengkap"}
+            {expanded ? t("collapse") : t("expand")}
           </button>
         )}
         <button className={`${toolbarBtn(false)} h-6 px-2 text-xs`} onClick={handleCopy} disabled={copied}>
-          {copied ? "Tersalin!" : "Salin"}
+          {copied ? t("copied") : t("copy")}
         </button>
       </div>
     </div>

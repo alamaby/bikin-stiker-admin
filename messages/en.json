@@ -10,7 +10,20 @@
     "cancel": "Cancel",
     "search": "Search",
     "actions": "Actions",
-    "home": "Home"
+    "home": "Home",
+    "signingOut": "Signing out...",
+    "back": "Back",
+    "clear": "Clear",
+    "close": "Close",
+    "successTitle": "Success",
+    "errorTitle": "Failed",
+    "backToLogin": "Back to login",
+    "details": "Details",
+    "logsLabel": "Logs",
+    "expand": "Show more",
+    "collapse": "Collapse",
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "nav": {
     "menu": "Menu",
@@ -21,6 +34,54 @@
     "llmLogs": "LLM Logs",
     "presets": "Preset Styles"
   },
+  "filters": {
+    "all": "All",
+    "filter": "Filter",
+    "clear": "Clear",
+    "tier": "Tier",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "suspended": "Suspended",
+    "success": "Succeeded",
+    "fail": "Failed",
+    "type": "Type",
+    "provider": "Provider",
+    "route": "Route",
+    "role": "Role",
+    "schedule": "Schedule",
+    "scheduledNow": "Currently active",
+    "scheduledFuture": "Scheduled",
+    "expired": "Expired",
+    "configId": "Config ID",
+    "configIdPlaceholder": "config_id (optional)",
+    "preset": "Preset",
+    "presetPlaceholder": "preset id",
+    "dateFrom": "From date",
+    "dateTo": "To date",
+    "promptSearch": "Search prompt/provider/model",
+    "promptPlaceholder": "prompt / provider / model / error",
+    "searchLabel": "Search",
+    "q": "Search",
+    "totalUsers": "users",
+    "page": "page",
+    "sort": "sort",
+    "total": "total",
+    "onPage": "on page",
+    "items": "items"
+  },
+  "header": {
+    "searchPlaceholder": "Search logs, users, presets...",
+    "notifications": "Notification",
+    "noNotifications": "No failed generations in the last 24h. All clear.",
+    "viewAllFailed": "View All Failed Logs",
+    "failedSummary": "failed generations",
+    "failedSummaryDetail": "in the last 24 hours",
+    "summary": "summary",
+    "minutesAgo": "min ago",
+    "hoursAgo": "hr ago",
+    "daysAgo": "days ago"
+  },
   "login": {
     "title": "Admin Login",
     "subtitle": "Only allowlisted emails can sign in",
@@ -29,7 +90,9 @@
     "submit": "Sign In",
     "error": "Sign-in failed. Check email/password.",
     "notAdmin": "This email has no admin access.",
-    "success": "Signed in"
+    "success": "Signed in",
+    "failedTitle": "Sign-in failed",
+    "forbiddenTitle": "Access denied"
   },
   "dashboard": {
     "title": "App Overview",
@@ -46,7 +109,8 @@
     "recentGenerations": "Recent Generations",
     "byProvider": "By Provider",
     "range7d": "7 days",
-    "range30d": "30 days"
+    "range30d": "30 days",
+    "allLogs": "All logs"
   },
   "users": {
     "title": "User Management",
@@ -62,7 +126,10 @@
     "wallet": "Wallet",
     "subscription": "Subscription",
     "recentActivity": "Recent Activity",
-    "noData": "No data yet"
+    "noData": "No data yet",
+    "status": "Status",
+    "date": "Date",
+    "until": "until"
   },
   "llmConfig": {
     "title": "LLM Configuration",
@@ -89,13 +156,26 @@
     "provider": "Provider",
     "status": "Status",
     "latency": "Latency",
-    "created": "Time"
+    "created": "Time",
+    "type": "Type",
+    "prompt": "Prompt",
+    "preset": "Preset",
+    "config": "Config",
+    "viewConfig": "View config",
+    "viewPreset": "View preset",
+    "clearFilter": "Clear filter",
+    "noMatch": "No logs match the filter. Try changing the filter or clearing config_id."
   },
   "presets": {
     "title": "Preset Styles",
     "subtitle": "Manage sticker styles",
     "create": "Add Preset",
     "edit": "Edit Preset",
+    "delete": "Delete",
+    "deleteTitle": "Delete preset?",
+    "deleteBodyPrefix": "Preset",
+    "deleteBodySuffix": "will be permanently deleted. This action cannot be undone.",
+    "deleteConfirm": "Yes, delete",
     "label": "Label",
     "id": "ID",
     "emoji": "Emoji",

@@ -10,7 +10,20 @@
     "cancel": "Batal",
     "search": "Cari",
     "actions": "Aksi",
-    "home": "Beranda"
+    "home": "Beranda",
+    "signingOut": "Sedang keluar...",
+    "back": "Kembali",
+    "clear": "Bersihkan",
+    "close": "Tutup",
+    "successTitle": "Berhasil",
+    "errorTitle": "Gagal",
+    "backToLogin": "Kembali ke login",
+    "details": "Detail",
+    "logsLabel": "Log",
+    "expand": "Lihat lengkap",
+    "collapse": "Ciutkan",
+    "copy": "Salin",
+    "copied": "Tersalin!"
   },
   "nav": {
     "menu": "Menu",
@@ -21,6 +34,54 @@
     "llmLogs": "Log LLM",
     "presets": "Preset Style"
   },
+  "filters": {
+    "all": "Semua",
+    "filter": "Filter",
+    "clear": "Bersihkan",
+    "tier": "Tier",
+    "status": "Status",
+    "active": "Aktif",
+    "inactive": "Nonaktif",
+    "suspended": "Suspended",
+    "success": "Sukses",
+    "fail": "Gagal",
+    "type": "Tipe",
+    "provider": "Provider",
+    "route": "Route",
+    "role": "Role",
+    "schedule": "Jadwal",
+    "scheduledNow": "Sedang aktif",
+    "scheduledFuture": "Terjadwal",
+    "expired": "Kedaluwarsa",
+    "configId": "Config ID",
+    "configIdPlaceholder": "config_id (opsional)",
+    "preset": "Preset",
+    "presetPlaceholder": "preset id",
+    "dateFrom": "Dari tanggal",
+    "dateTo": "Sampai tanggal",
+    "promptSearch": "Cari prompt/provider/model",
+    "promptPlaceholder": "prompt / provider / model / error",
+    "searchLabel": "Cari",
+    "q": "Cari",
+    "totalUsers": "pengguna",
+    "page": "hal",
+    "sort": "sort",
+    "total": "total",
+    "onPage": "di hal",
+    "items": "item"
+  },
+  "header": {
+    "searchPlaceholder": "Cari log, pengguna, preset...",
+    "notifications": "Notifikasi",
+    "noNotifications": "Tidak ada generasi gagal dalam 24 jam terakhir. Semua aman.",
+    "viewAllFailed": "Lihat Semua Log Gagal",
+    "failedSummary": "generasi gagal",
+    "failedSummaryDetail": "dalam 24 jam terakhir",
+    "summary": "ringkasan",
+    "minutesAgo": "mnt lalu",
+    "hoursAgo": "jam lalu",
+    "daysAgo": "hari lalu"
+  },
   "login": {
     "title": "Login Admin",
     "subtitle": "Hanya email yang diizinkan dapat masuk",
@@ -29,7 +90,9 @@
     "submit": "Masuk",
     "error": "Gagal masuk. Periksa email/kata sandi.",
     "notAdmin": "Email tidak memiliki akses admin.",
-    "success": "Berhasil masuk"
+    "success": "Berhasil masuk",
+    "failedTitle": "Login gagal",
+    "forbiddenTitle": "Akses ditolak"
   },
   "dashboard": {
     "title": "Ringkasan Aplikasi",
@@ -46,13 +109,13 @@
     "recentGenerations": "Generasi Terbaru",
     "byProvider": "Berdasarkan Provider",
     "range7d": "7 hari",
-    "range30d": "30 hari"
+    "range30d": "30 hari",
+    "allLogs": "Semua log"
   },
   "users": {
     "title": "Manajemen Pengguna",
     "subtitle": "Daftar pengguna terdaftar",
-    "searchPlaceholder": "Cari email atau ID",
-    "columns": {
+    "searchPlaceholder": "Cari email atau ID",    "columns": {
       "email": "Email",
       "balance": "Saldo",
       "tier": "Tier",
@@ -62,7 +125,10 @@
     "wallet": "Dompet",
     "subscription": "Langganan",
     "recentActivity": "Aktivitas Terbaru",
-    "noData": "Belum ada data"
+    "noData": "Belum ada data",
+    "status": "Status",
+    "date": "Tanggal",
+    "until": "sampai"
   },
   "llmConfig": {
     "title": "Konfigurasi LLM",
@@ -89,13 +155,26 @@
     "provider": "Provider",
     "status": "Status",
     "latency": "Latensi",
-    "created": "Waktu"
+    "created": "Waktu",
+    "type": "Tipe",
+    "prompt": "Prompt",
+    "preset": "Preset",
+    "config": "Config",
+    "viewConfig": "Lihat config",
+    "viewPreset": "Lihat preset",
+    "clearFilter": "Hapus filter",
+    "noMatch": "Tidak ada log cocok filter. Coba ubah filter atau hapus config_id."
   },
   "presets": {
     "title": "Preset Style",
     "subtitle": "Kelola style stiker",
     "create": "Tambah Preset",
     "edit": "Edit Preset",
+    "delete": "Hapus",
+    "deleteTitle": "Hapus preset?",
+    "deleteBodyPrefix": "Preset",
+    "deleteBodySuffix": "akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.",
+    "deleteConfirm": "Ya, hapus",
     "label": "Label",
     "id": "ID",
     "emoji": "Emoji",

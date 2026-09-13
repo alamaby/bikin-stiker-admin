@@ -250,6 +250,7 @@ export default async function LlmLogsPage({
   const perPage = 20;
   const t = await getTranslations({ locale, namespace: "llmLogs" });
   const tc = await getTranslations({ locale, namespace: "common" });
+  const tf = await getTranslations({ locale, namespace: "filters" });
 
   const data = await fetchUnifiedLogs({ q, provider, success, type, configId: config_id, preset, dateFrom: date_from, dateTo: date_to, sort, order, page, perPage });
 
@@ -267,20 +268,20 @@ export default async function LlmLogsPage({
         <LogFilterBar locale={locale} initial={{ q, provider, success, type, config_id, preset, date_from, date_to }} />
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
           <span className="text-theme-xs text-gray-500 dark:text-gray-400">
-            {data ? `${data.total} logs · page ${data.page}/${data.totalPages}` : "—"} {config_id && `· config ${config_id.slice(0, 8)}...`} {preset && `· preset ${preset}`}
+            {data ? `${data.total} logs · ${tf("page")} ${data.page}/${data.totalPages}` : "—"} {config_id && `· config ${config_id.slice(0, 8)}...`} {preset && `· preset ${preset}`}
           </span>
           <div className="flex flex-wrap gap-1.5">
             <Link
               href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })}
               className={toolbarBtn(sort === "created_at")}
             >
-              Waktu <ArrowUpDown className="size-3.5" />
+              {t("created")} <ArrowUpDown className="size-3.5" />
             </Link>
             <Link
               href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "latency_ms", order: toggleOrder, page: "1" })}
               className={toolbarBtn(sort === "latency_ms")}
             >
-              Latensi
+              {t("latency")}
             </Link>
             <Link
               href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order: toggleOrder, page: "1" })}
@@ -294,16 +295,16 @@ export default async function LlmLogsPage({
           <div className="mt-3 flex flex-wrap gap-2">
             {config_id && (
               <Link href={buildLocaleHref(locale, `/llm-config/${config_id}`)} className={toolbarBtn(false)}>
-                Lihat config
+                {t("viewConfig")}
               </Link>
             )}
             {preset && (
               <Link href={buildLocaleHref(locale, `/presets/${preset}`)} className={toolbarBtn(false)}>
-                Lihat preset
+                {t("viewPreset")}
               </Link>
             )}
             <Link href={buildUrl(locale, { q, provider, success, type, date_from, date_to, sort, order, page: "1" })} className={toolbarBtn(false)}>
-              Hapus filter
+              {t("clearFilter")}
             </Link>
           </div>
         )}
@@ -321,22 +322,22 @@ export default async function LlmLogsPage({
                 <Table>
                   <TableHeader className={tableHeadRow}>
                     <TableRow>
-                      <TableCell isHeader className={thCell}>Tipe</TableCell>
-                      <TableCell isHeader className={thCell}>Provider / Model</TableCell>
-                      <TableCell isHeader className={thCell}>Prompt</TableCell>
-                      <TableCell isHeader className={thCell}>Preset</TableCell>
-                      <TableCell isHeader className={thCell}>Status</TableCell>
+                      <TableCell isHeader className={thCell}>{t("type")}</TableCell>
+                      <TableCell isHeader className={thCell}>{t("provider")} / Model</TableCell>
+                      <TableCell isHeader className={thCell}>{t("prompt")}</TableCell>
+                      <TableCell isHeader className={thCell}>{t("preset")}</TableCell>
+                      <TableCell isHeader className={thCell}>{t("status")}</TableCell>
                       <TableCell isHeader className={thCell}>
                         <Link href={preserve({ sort: "latency_ms", order: sort === "latency_ms" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
-                          Latensi <ArrowUpDown className="size-3.5" />
+                          {t("latency")} <ArrowUpDown className="size-3.5" />
                         </Link>
                       </TableCell>
                       <TableCell isHeader className={thCell}>
                         <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
-                          Waktu <ArrowUpDown className="size-3.5" />
+                          {t("created")} <ArrowUpDown className="size-3.5" />
                         </Link>
                       </TableCell>
-                      <TableCell isHeader className={thCell}>Config</TableCell>
+                      <TableCell isHeader className={thCell}>{t("config")}</TableCell>
                     </TableRow>
                   </TableHeader>
                   <TableBody className={tableBody}>
@@ -375,7 +376,7 @@ export default async function LlmLogsPage({
                     {data.rows.length === 0 && (
                       <TableRow>
                         <TableCell className={`${tdCell} p-6 text-center text-gray-500 dark:text-gray-400`}>
-                          Tidak ada log cocok filter. Coba ubah filter atau hapus config_id.
+                          {t("noMatch")}
                         </TableCell>
                       </TableRow>
                     )}
@@ -391,7 +392,7 @@ export default async function LlmLogsPage({
               totalPages={data.totalPages}
               total={data.total}
               pageSize={perPage}
-              summary={(total, shown, pg) => `${total} total · ${shown} di halaman ${pg}`}
+              summary={(total, shown, pg) => `${total} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
               getHref={(p) => buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order, page: String(p) })}
             />
           </div>
