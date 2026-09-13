@@ -9,9 +9,12 @@
     "save": "Simpan",
     "cancel": "Batal",
     "search": "Cari",
-    "actions": "Aksi"
+    "actions": "Aksi",
+    "home": "Beranda"
   },
   "nav": {
+    "menu": "Menu",
+    "manage": "Manajemen",
     "dashboard": "Dasbor",
     "users": "Pengguna",
     "llmConfig": "Konfigurasi LLM",

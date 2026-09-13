@@ -1,11 +1,23 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { LogFilterBar } from "./_components/log-filter-bar";
 import { PromptCell } from "./_components/prompt-cell";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import TailBadge from "@/components/ui/badge/TailBadge";
+import Pagination from "@/components/tables/Pagination";
+import {
+  tableWrap,
+  tableScroll,
+  tableHeadRow,
+  tableBody,
+  thCell,
+  tdCell,
+  toolbarBtn,
+  sortLink,
+} from "@/components/tables/table-styles";
+import { buildLocaleHref } from "@/lib/locale-href";
 
 export const dynamic = "force-dynamic";
 
@@ -203,15 +215,7 @@ async function fetchUnifiedLogs(opts: {
   const start = (safePage - 1) * perPage;
   const paged = filtered.slice(start, start + perPage);
 
-  // Also fetch config labels for display
-  const configMap = new Map<string, { provider_name: string; model_name: string }>();
-  const cfgIds = Array.from(new Set(paged.map((r) => r.config_id).filter(Boolean) as string[]));
-  if (cfgIds.length > 0) {
-    const { data: configs } = await supabase.from("image_generation_configs").select("id,provider_name,model_name").in("id", cfgIds);
-    configs?.forEach((c) => configMap.set(c.id, c));
-  }
-
-  return { rows: paged, total, totalPages, page: safePage, configMap };
+  return { rows: paged, total, totalPages, page: safePage };
 }
 
 function buildUrl(locale: string, params: Record<string, string | undefined>) {
@@ -220,7 +224,7 @@ function buildUrl(locale: string, params: Record<string, string | undefined>) {
     if (v && v.trim() !== "" && v !== "all") usp.set(k, v);
   });
   const qs = usp.toString();
-  return `/${locale}/llm-logs${qs ? `?${qs}` : ""}`;
+  return `${buildLocaleHref(locale, "/llm-logs")}${qs ? `?${qs}` : ""}`;
 }
 
 export default async function LlmLogsPage({
@@ -245,6 +249,7 @@ export default async function LlmLogsPage({
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const perPage = 20;
   const t = await getTranslations({ locale, namespace: "llmLogs" });
+  const tc = await getTranslations({ locale, namespace: "common" });
 
   const data = await fetchUnifiedLogs({ q, provider, success, type, configId: config_id, preset, dateFrom: date_from, dateTo: date_to, sort, order, page, perPage });
 
@@ -254,151 +259,142 @@ export default async function LlmLogsPage({
   const toggleOrder = order === "asc" ? "desc" : "asc";
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
+    <div>
+      <PageBreadcrumb pageTitle={t("title")} homeHref={buildLocaleHref(locale, "/")} homeLabel={tc("home")} />
+      <p className="-mt-4 mb-6 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
+
+      <div className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+        <LogFilterBar locale={locale} initial={{ q, provider, success, type, config_id, preset, date_from, date_to }} />
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+            {data ? `${data.total} logs · page ${data.page}/${data.totalPages}` : "—"} {config_id && `· config ${config_id.slice(0, 8)}...`} {preset && `· preset ${preset}`}
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <Link
+              href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })}
+              className={toolbarBtn(sort === "created_at")}
+            >
+              Waktu <ArrowUpDown className="size-3.5" />
+            </Link>
+            <Link
+              href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "latency_ms", order: toggleOrder, page: "1" })}
+              className={toolbarBtn(sort === "latency_ms")}
+            >
+              Latensi
+            </Link>
+            <Link
+              href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order: toggleOrder, page: "1" })}
+              className={toolbarBtn(false)}
+            >
+              {order === "asc" ? "↑ asc" : "↓ desc"}
+            </Link>
+          </div>
+        </div>
+        {(config_id || preset) && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {config_id && (
+              <Link href={buildLocaleHref(locale, `/llm-config/${config_id}`)} className={toolbarBtn(false)}>
+                Lihat config
+              </Link>
+            )}
+            {preset && (
+              <Link href={buildLocaleHref(locale, `/presets/${preset}`)} className={toolbarBtn(false)}>
+                Lihat preset
+              </Link>
+            )}
+            <Link href={buildUrl(locale, { q, provider, success, type, date_from, date_to, sort, order, page: "1" })} className={toolbarBtn(false)}>
+              Hapus filter
+            </Link>
+          </div>
+        )}
       </div>
 
-      <Card>
-        <CardContent className="p-4 space-y-4">
-          <LogFilterBar locale={locale} initial={{ q, provider, success, type, config_id, preset, date_from, date_to }} />
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
-              {data ? `${data.total} logs · page ${data.page}/${data.totalPages}` : "—"} {config_id && `· config ${config_id.slice(0, 8)}…`} {preset && `· preset ${preset}`}
-            </span>
-            <div className="flex gap-1">
-              <Button asChild variant={sort === "created_at" ? "secondary" : "outline"} size="sm" aria-busy={false}>
-                <Link href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })}>
-                  Waktu <ArrowUpDown className="h-3 w-3" />
-                </Link>
-              </Button>
-              <Button asChild variant={sort === "latency_ms" ? "secondary" : "outline"} size="sm">
-                <Link href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort: "latency_ms", order: toggleOrder, page: "1" })}>Latensi</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order: toggleOrder, page: "1" })}>{order === "asc" ? "↑ asc" : "↓ desc"}</Link>
-              </Button>
-            </div>
-          </div>
-          {(config_id || preset) && (
-            <div className="flex flex-wrap gap-2">
-              {config_id && (
-                <Button asChild variant="ghost" size="sm">
-                  <Link href={`/${locale}/llm-config/${config_id}`}>Lihat config</Link>
-                </Button>
-              )}
-              {preset && (
-                <Button asChild variant="ghost" size="sm">
-                  <Link href={`/${locale}/presets/${preset}`}>Lihat preset</Link>
-                </Button>
-              )}
-              <Button asChild variant="outline" size="sm">
-                <Link href={buildUrl(locale, { q, provider, success, type, date_from, date_to, sort, order, page: "1" })}>Hapus filter</Link>
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
       {!data ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">Supabase env not configured.</CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+          Supabase env not configured.
+        </div>
       ) : (
         <>
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-auto">
-                <table className="w-full text-xs">
-                  <thead className="border-b bg-muted/50">
-                    <tr>
-                      <th className="p-2 text-left">Tipe</th>
-                      <th className="p-2 text-left">Provider / Model</th>
-                      <th className="p-2 text-left">Prompt</th>
-                      <th className="p-2 text-left">Preset</th>
-                      <th className="p-2 text-left">Status</th>
-                      <th className="p-2 text-left">
-                        <Link href={preserve({ sort: "latency_ms", order: sort === "latency_ms" && order === "asc" ? "desc" : "asc", page: "1" })} className="hover:underline inline-flex items-center gap-1">
-                          Latensi <ArrowUpDown className="h-3 w-3" />
+          <div className={tableWrap}>
+            <div className={tableScroll}>
+              <div className="min-w-[1020px]">
+                <Table>
+                  <TableHeader className={tableHeadRow}>
+                    <TableRow>
+                      <TableCell isHeader className={thCell}>Tipe</TableCell>
+                      <TableCell isHeader className={thCell}>Provider / Model</TableCell>
+                      <TableCell isHeader className={thCell}>Prompt</TableCell>
+                      <TableCell isHeader className={thCell}>Preset</TableCell>
+                      <TableCell isHeader className={thCell}>Status</TableCell>
+                      <TableCell isHeader className={thCell}>
+                        <Link href={preserve({ sort: "latency_ms", order: sort === "latency_ms" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                          Latensi <ArrowUpDown className="size-3.5" />
                         </Link>
-                      </th>
-                      <th className="p-2 text-left">
-                        <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className="hover:underline inline-flex items-center gap-1">
-                          Waktu <ArrowUpDown className="h-3 w-3" />
+                      </TableCell>
+                      <TableCell isHeader className={thCell}>
+                        <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                          Waktu <ArrowUpDown className="size-3.5" />
                         </Link>
-                      </th>
-                      <th className="p-2 text-left">Config</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      </TableCell>
+                      <TableCell isHeader className={thCell}>Config</TableCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className={tableBody}>
                     {data.rows.map((r) => (
-                      <tr key={`${r.type}-${r.id}`} className="border-b last:border-0 hover:bg-muted/20">
-                        <td className="p-2">
-                          <Badge variant={r.type === "image" ? "default" : r.type === "reasoning" ? "secondary" : "outline"}>{r.type}</Badge>
-                          {r.cached && <Badge variant="outline" className="ml-1">cached</Badge>}
-                        </td>
-                        <td className="p-2">
-                          <div className="font-medium">{r.provider}</div>
-                          <div className="font-mono text-[11px] text-muted-foreground">{r.model}</div>
-                          {r.route_scope && <Badge variant="outline" className="mt-1 text-[10px]">{r.route_scope}</Badge>}
-                        </td>
-                        <td className="p-2">
+                      <TableRow key={`${r.type}-${r.id}`}>
+                        <TableCell className={tdCell}>
+                          <TailBadge color={r.type === "image" ? "primary" : r.type === "reasoning" ? "info" : "light"}>{r.type}</TailBadge>
+                          {r.cached && <TailBadge color="light" className="ml-1">cached</TailBadge>}
+                        </TableCell>
+                        <TableCell className={tdCell}>
+                          <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">{r.provider}</span>
+                          <span className="block font-mono text-[11px] text-gray-500 dark:text-gray-400">{r.model}</span>
+                          {r.route_scope && <TailBadge color="light" size="sm" className="mt-1">{r.route_scope}</TailBadge>}
+                        </TableCell>
+                        <TableCell className={tdCell}>
                           <PromptCell text={r.prompt || r.error || ""} />
-                          {r.error && <div className="mt-1 text-[11px] text-destructive">{r.error.slice(0, 120)}</div>}
-                        </td>
-                        <td className="p-2 font-mono text-xs">{r.preset ?? "—"}</td>
-                        <td className="p-2">
-                          <Badge variant={r.success ? "default" : "destructive"}>{r.success ? "ok" : "fail"}</Badge>
-                        </td>
-                        <td className="p-2">{r.latency ?? "—"} ms</td>
-                        <td className="p-2 text-[11px]">{new Date(r.created_at).toLocaleString()}</td>
-                        <td className="p-2">
+                          {r.error && <div className="mt-1 text-[11px] text-error-600 dark:text-error-400">{r.error.slice(0, 120)}</div>}
+                        </TableCell>
+                        <TableCell className={`${tdCell} font-mono text-xs`}>{r.preset ?? "—"}</TableCell>
+                        <TableCell className={tdCell}>
+                          <TailBadge variant={r.success ? "light" : "solid"} color={r.success ? "success" : "error"}>{r.success ? "ok" : "fail"}</TailBadge>
+                        </TableCell>
+                        <TableCell className={tdCell}>{r.latency ?? "—"} ms</TableCell>
+                        <TableCell className={`${tdCell} text-[11px]`}>{new Date(r.created_at).toLocaleString()}</TableCell>
+                        <TableCell className={tdCell}>
                           {r.config_id ? (
-                            <Link href={`/${locale}/llm-config/${r.config_id}`} className="font-mono text-[11px] text-primary hover:underline">
-                              {r.config_id.slice(0, 8)}…
+                            <Link href={buildLocaleHref(locale, `/llm-config/${r.config_id}`)} className="font-mono text-[11px] text-brand-600 hover:underline dark:text-brand-400">
+                              {r.config_id.slice(0, 8)}...
                             </Link>
                           ) : (
-                            <span className="text-muted-foreground">—</span>
+                            <span className="text-gray-400">—</span>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
                     {data.rows.length === 0 && (
-                      <tr>
-                        <td colSpan={8} className="p-6 text-center text-muted-foreground">
+                      <TableRow>
+                        <TableCell className={`${tdCell} p-6 text-center text-gray-500 dark:text-gray-400`}>
                           Tidak ada log cocok filter. Coba ubah filter atau hapus config_id.
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     )}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {data.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                {data.total} total · {data.rows.length} di halaman {data.page}
-              </p>
-              <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm" disabled={data.page <= 1}>
-                  <Link href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order, page: String(data.page - 1) })} aria-disabled={data.page <= 1}>
-                    <ChevronLeft className="h-4 w-4" /> Prev
-                  </Link>
-                </Button>
-                <span className="flex items-center px-2 text-sm">
-                  {data.page} / {data.totalPages}
-                </span>
-                <Button asChild variant="outline" size="sm" disabled={data.page >= data.totalPages}>
-                  <Link href={buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order, page: String(data.page + 1) })} aria-disabled={data.page >= data.totalPages}>
-                    Next <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                  </TableBody>
+                </Table>
               </div>
             </div>
-          )}
+          </div>
+
+          <div className="mt-4">
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              total={data.total}
+              pageSize={perPage}
+              summary={(total, shown, pg) => `${total} total · ${shown} di halaman ${pg}`}
+              getHref={(p) => buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order, page: String(p) })}
+            />
+          </div>
         </>
       )}
     </div>

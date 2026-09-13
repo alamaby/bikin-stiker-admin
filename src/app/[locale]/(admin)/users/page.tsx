@@ -1,10 +1,24 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { UserFilterBar } from "./_components/filter-bar";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import TailBadge from "@/components/ui/badge/TailBadge";
+import Pagination from "@/components/tables/Pagination";
+import {
+  tableWrap,
+  tableScroll,
+  tableHeadRow,
+  tableBody,
+  thCell,
+  tdCell,
+  tdTitle,
+  tdSub,
+  toolbarBtn,
+  sortLink,
+} from "@/components/tables/table-styles";
+import { buildLocaleHref } from "@/lib/locale-href";
 
 export const dynamic = "force-dynamic";
 
@@ -110,7 +124,7 @@ function buildUrl(locale: string, params: Record<string, string | undefined>) {
     if (v && v.trim() !== "" && v !== "all") usp.set(k, v);
   });
   const qs = usp.toString();
-  return `/${locale}/users${qs ? `?${qs}` : ""}`;
+  return `${buildLocaleHref(locale, "/users")}${qs ? `?${qs}` : ""}`;
 }
 
 export default async function UsersPage({
@@ -130,6 +144,7 @@ export default async function UsersPage({
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const perPage = 15;
   const t = await getTranslations({ locale, namespace: "users" });
+  const tc = await getTranslations({ locale, namespace: "common" });
 
   const result = await getUsers({ q, tier, status, sort, order, page, perPage });
 
@@ -137,124 +152,106 @@ export default async function UsersPage({
   const toggleOrder = order === "asc" ? "desc" : "asc";
 
   return (
-    <div className="space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
+    <div>
+      <PageBreadcrumb pageTitle={t("title")} homeHref={buildLocaleHref(locale, "/")} homeLabel={tc("home")} />
+      <p className="-mt-4 mb-6 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
+
+      <div className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+        <UserFilterBar locale={locale} initial={{ q, tier, status }} />
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+            {result ? `${result.total} pengguna · hal ${result.page}/${result.totalPages}` : "—"} · sort {sort} {order}
+          </span>
+          <div className="flex flex-wrap gap-1.5">
+            <Link href={buildUrl(locale, { q, tier, status, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })} className={toolbarBtn(sort === "created_at")}>
+              Tanggal <ArrowUpDown className="size-3.5" />
+            </Link>
+            <Link href={buildUrl(locale, { q, tier, status, sort: "balance", order: toggleOrder, page: "1" })} className={toolbarBtn(sort === "balance")}>
+              Saldo
+            </Link>
+            <Link href={buildUrl(locale, { q, tier, status, sort, order: toggleOrder, page: "1" })} className={toolbarBtn(false)}>
+              {order === "asc" ? "↑ asc" : "↓ desc"}
+            </Link>
+          </div>
+        </div>
       </div>
 
-      <Card>
-        <CardContent className="p-4 space-y-4">
-          <UserFilterBar locale={locale} initial={{ q, tier, status }} />
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
-              {result ? `${result.total} pengguna · hal ${result.page}/${result.totalPages}` : "—"} · sort {sort} {order}
-            </span>
-            <div className="flex gap-1">
-              <Button asChild variant={sort === "created_at" ? "secondary" : "outline"} size="sm">
-                <Link href={buildUrl(locale, { q, tier, status, sort: "created_at", order: sort === "created_at" ? toggleOrder : "desc", page: "1" })}>
-                  Tanggal <ArrowUpDown className="h-3 w-3" />
-                </Link>
-              </Button>
-              <Button asChild variant={sort === "balance" ? "secondary" : "outline"} size="sm">
-                <Link href={buildUrl(locale, { q, tier, status, sort: "balance", order: toggleOrder, page: "1" })}>Saldo</Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href={buildUrl(locale, { q, tier, status, sort, order: toggleOrder, page: "1" })}>{order === "asc" ? "↑ asc" : "↓ desc"}</Link>
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {!result ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">Supabase env not configured. Set SUPABASE_URL + SUPABASE_SECRET_KEY.</CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+          Supabase env not configured. Set SUPABASE_URL + SUPABASE_SECRET_KEY.
+        </div>
       ) : result.data.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">{t("noData")}</CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+          {t("noData")}
+        </div>
       ) : (
         <>
-          <Card>
-            <CardContent className="p-0">
-              <div className="overflow-auto">
-                <table className="w-full text-sm">
-                  <thead className="border-b bg-muted/50">
-                    <tr>
-                      <th className="p-3 text-left">
-                        <Link href={preserve({ sort: "email", order: sort === "email" && order === "asc" ? "desc" : "asc", page: "1" })} className="inline-flex items-center gap-1 hover:underline">
-                          {t("columns.email")} <ArrowUpDown className="h-3 w-3" />
+          <div className={tableWrap}>
+            <div className={tableScroll}>
+              <div className="min-w-[860px]">
+                <Table>
+                  <TableHeader className={tableHeadRow}>
+                    <TableRow>
+                      <TableCell isHeader className={thCell}>
+                        <Link href={preserve({ sort: "email", order: sort === "email" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                          {t("columns.email")} <ArrowUpDown className="size-3.5" />
                         </Link>
-                      </th>
-                      <th className="p-3 text-left">
-                        <Link href={preserve({ sort: "balance", order: sort === "balance" && order === "asc" ? "desc" : "asc", page: "1" })} className="inline-flex items-center gap-1 hover:underline">
-                          {t("columns.balance")} <ArrowUpDown className="h-3 w-3" />
+                      </TableCell>
+                      <TableCell isHeader className={thCell}>
+                        <Link href={preserve({ sort: "balance", order: sort === "balance" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                          {t("columns.balance")} <ArrowUpDown className="size-3.5" />
                         </Link>
-                      </th>
-                      <th className="p-3 text-left">{t("columns.tier")}</th>
-                      <th className="p-3 text-left">Status</th>
-                      <th className="p-3 text-left">
-                        <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className="inline-flex items-center gap-1 hover:underline">
-                          {t("columns.created")} <ArrowUpDown className="h-3 w-3" />
+                      </TableCell>
+                      <TableCell isHeader className={thCell}>{t("columns.tier")}</TableCell>
+                      <TableCell isHeader className={thCell}>Status</TableCell>
+                      <TableCell isHeader className={thCell}>
+                        <Link href={preserve({ sort: "created_at", order: sort === "created_at" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                          {t("columns.created")} <ArrowUpDown className="size-3.5" />
                         </Link>
-                      </th>
-                      <th className="p-3 text-left">Detail</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+                      </TableCell>
+                      <TableCell isHeader className={thCell}>Detail</TableCell>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className={tableBody}>
                     {result.data.map((u) => (
-                      <tr key={u.user_id} className="border-b last:border-0 hover:bg-muted/20">
-                        <td className="p-3">
-                          <div className="font-medium">{u.email}</div>
-                          <div className="font-mono text-xs text-muted-foreground">{u.user_id.slice(0, 8)}…</div>
-                          {u.display_name && <div className="text-xs">{u.display_name}</div>}
-                        </td>
-                        <td className="p-3">{u.balance}</td>
-                        <td className="p-3">
-                          <Badge variant={u.tier === "plus" ? "default" : "secondary"}>{u.tier}</Badge>
-                        </td>
-                        <td className="p-3">
-                          {u.isSuspended ? <Badge variant="destructive">Suspended</Badge> : <Badge variant="outline">Aktif</Badge>}
-                          {u.isSuspended && u.banned_until && <div className="text-[11px] text-muted-foreground">sampai {new Date(u.banned_until).toLocaleDateString()}</div>}
-                        </td>
-                        <td className="p-3 text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString("id-ID") : "—"}</td>
-                        <td className="p-3">
-                          <Button asChild variant="outline" size="sm">
-                            <Link href={`/${locale}/users/${u.user_id}`}>{t("detail")}</Link>
-                          </Button>
-                        </td>
-                      </tr>
+                      <TableRow key={u.user_id}>
+                        <TableCell className={tdCell}>
+                          <span className={tdTitle}>{u.email}</span>
+                          <span className={`${tdSub} font-mono`}>{u.user_id.slice(0, 8)}...</span>
+                          {u.display_name && <span className={tdSub}>{u.display_name}</span>}
+                        </TableCell>
+                        <TableCell className={tdCell}>{u.balance}</TableCell>
+                        <TableCell className={tdCell}>
+                          <TailBadge color={u.tier === "plus" ? "primary" : "light"}>{u.tier}</TailBadge>
+                        </TableCell>
+                        <TableCell className={tdCell}>
+                          {u.isSuspended ? <TailBadge variant="solid" color="error">Suspended</TailBadge> : <TailBadge color="light">Aktif</TailBadge>}
+                          {u.isSuspended && u.banned_until && <span className={`${tdSub} mt-1 text-[11px]`}>sampai {new Date(u.banned_until).toLocaleDateString()}</span>}
+                        </TableCell>
+                        <TableCell className={`${tdCell} text-xs`}>{u.created_at ? new Date(u.created_at).toLocaleDateString("id-ID") : "—"}</TableCell>
+                        <TableCell className={tdCell}>
+                          <Link href={buildLocaleHref(locale, `/users/${u.user_id}`)} className={toolbarBtn(false)}>
+                            {t("detail")}
+                          </Link>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-
-          {result.totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
-                {result.total} total · {result.data.length} di hal {result.page}
-              </p>
-              <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm" disabled={result.page <= 1}>
-                  <Link href={buildUrl(locale, { q, tier, status, sort, order, page: String(result.page - 1) })} aria-disabled={result.page <= 1}>
-                    <ChevronLeft className="h-4 w-4" /> Prev
-                  </Link>
-                </Button>
-                <span className="flex items-center px-2 text-sm">
-                  {result.page} / {result.totalPages}
-                </span>
-                <Button asChild variant="outline" size="sm" disabled={result.page >= result.totalPages}>
-                  <Link href={buildUrl(locale, { q, tier, status, sort, order, page: String(result.page + 1) })} aria-disabled={result.page >= result.totalPages}>
-                    Next <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
+                  </TableBody>
+                </Table>
               </div>
             </div>
-          )}
+          </div>
+
+          <div className="mt-4">
+            <Pagination
+              page={result.page}
+              totalPages={result.totalPages}
+              total={result.total}
+              pageSize={perPage}
+              summary={(total, shown, pg) => `${total} total · ${shown} di hal ${pg}`}
+              getHref={(p) => buildUrl(locale, { q, tier, status, sort, order, page: String(p) })}
+            />
+          </div>
         </>
       )}
     </div>

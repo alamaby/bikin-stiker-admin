@@ -3,13 +3,38 @@
 import * as React from "react";
 import { useTranslations } from "next-intl";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LocaleSwitcher } from "@/components/locale-switcher";
+import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import Alert from "@/components/ui/alert/Alert";
+import { FormLabel, TextInput } from "@/components/form/controls";
+
+function CompactLocaleSwitcher() {
+  const router = useRouter();
+  const params = useParams();
+  const locale = (params.locale as string) ?? "id";
+
+  function switchLocale(next: string) {
+    router.push(`/${next}/login`);
+    router.refresh();
+  }
+
+  return (
+    <div className="flex items-center gap-1 rounded-full border border-gray-200 p-1 dark:border-gray-800">
+      {(["id", "en"] as const).map((l) => (
+        <button
+          key={l}
+          onClick={() => switchLocale(l)}
+          className={`rounded-full px-2.5 py-1 text-xs font-medium uppercase ${
+            locale === l ? "bg-brand-500 text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"
+          }`}
+        >
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const t = useTranslations("login");
@@ -55,25 +80,27 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex items-center justify-between border-b p-3">
-        <span className="font-semibold">{tc("appName")}</span>
-        <div className="flex items-center gap-2">
-          <LocaleSwitcher />
-          <ThemeToggle />
-        </div>
-      </div>
-      <div className="flex flex-1 items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-            <CardDescription>{t("subtitle")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              <div className="grid gap-2">
-                <Label htmlFor="email">{tc("email")}</Label>
-                <Input
+    <div className="relative min-h-screen bg-gray-50 p-6 dark:bg-gray-900 sm:p-0">
+      <div className="flex h-full min-h-screen flex-col justify-center">
+        <div className="mx-auto w-full max-w-md">
+          <div className="mb-4 flex items-center justify-between">
+            <Link href={`/${locale}`} className="text-lg font-bold text-gray-900 dark:text-white">
+              {tc("appName")}
+            </Link>
+            <div className="flex items-center gap-2">
+              <CompactLocaleSwitcher />
+              <ThemeToggleButton />
+            </div>
+          </div>
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-8">
+            <div className="mb-6">
+              <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">{t("title")}</h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <FormLabel htmlFor="email">{tc("email")}</FormLabel>
+                <TextInput
                   id="email"
                   type="email"
                   required
@@ -83,9 +110,9 @@ export default function LoginPage() {
                   autoComplete="email"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="password">{tc("password")}</Label>
-                <Input
+              <div>
+                <FormLabel htmlFor="password">{tc("password")}</FormLabel>
+                <TextInput
                   id="password"
                   type="password"
                   required
@@ -95,13 +122,17 @@ export default function LoginPage() {
                   autoComplete="current-password"
                 />
               </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" disabled={loading} className="w-full">
+              {error && <Alert variant="error" title="Login gagal" message={error} onClose={() => setError(null)} />}
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-brand-500 px-4 text-sm font-medium text-white shadow-theme-xs hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 {loading ? tc("loading") : t("submit")}
-              </Button>
+              </button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

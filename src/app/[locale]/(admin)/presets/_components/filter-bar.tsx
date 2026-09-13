@@ -2,8 +2,9 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Search, Loader2 } from "lucide-react";
+import { FormLabel, TextInput, SelectInput } from "@/components/form/controls";
+import { filterGrid4, filterActions, filterSubmitBtn, toolbarBtn } from "@/components/tables/table-styles";
 
 export function PresetFilterBar({
   locale,
@@ -37,44 +38,44 @@ export function PresetFilterBar({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-      <div className="grid gap-1">
-        <label className="text-xs font-medium">Cari</label>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="id / label / emoji / deskripsi" className="h-9 rounded-md border bg-background px-3 text-sm" disabled={pending} />
+    <form onSubmit={handleSubmit} className={`${filterGrid4} lg:grid-cols-5`}>
+      <div>
+        <FormLabel>Cari</FormLabel>
+        <TextInput value={q} onChange={(e) => setQ(e.target.value)} placeholder="id / label / emoji / deskripsi" disabled={pending} />
       </div>
-      <div className="grid gap-1">
-        <label className="text-xs font-medium">Role</label>
-        <select value={role} onChange={(e) => setRole(e.target.value)} className="h-9 rounded-md border bg-background px-3 text-sm" disabled={pending}>
+      <div>
+        <FormLabel>Role</FormLabel>
+        <SelectInput value={role} onChange={(e) => setRole(e.target.value)} disabled={pending}>
           <option value="all">Semua</option>
           <option value="guest">guest</option>
           <option value="free">free</option>
           <option value="plus">plus</option>
-        </select>
+        </SelectInput>
       </div>
-      <div className="grid gap-1">
-        <label className="text-xs font-medium">Aktif</label>
-        <select value={active} onChange={(e) => setActive(e.target.value)} className="h-9 rounded-md border bg-background px-3 text-sm" disabled={pending}>
+      <div>
+        <FormLabel>Aktif</FormLabel>
+        <SelectInput value={active} onChange={(e) => setActive(e.target.value)} disabled={pending}>
           <option value="all">Semua</option>
           <option value="active">Aktif</option>
           <option value="inactive">Nonaktif</option>
-        </select>
+        </SelectInput>
       </div>
-      <div className="grid gap-1">
-        <label className="text-xs font-medium">Jadwal</label>
-        <select value={valid} onChange={(e) => setValid(e.target.value)} className="h-9 rounded-md border bg-background px-3 text-sm" disabled={pending}>
+      <div>
+        <FormLabel>Jadwal</FormLabel>
+        <SelectInput value={valid} onChange={(e) => setValid(e.target.value)} disabled={pending}>
           <option value="all">Semua</option>
           <option value="active">Sedang aktif</option>
           <option value="scheduled">Terjadwal</option>
           <option value="expired">Kedaluwarsa</option>
-        </select>
+        </SelectInput>
       </div>
-      <div className="flex items-end gap-2 lg:col-span-4">
-        <Button type="submit" size="sm" variant="secondary" disabled={pending} aria-busy={pending}>
-          {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Filter
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={handleClear} disabled={pending}>
+      <div className={filterActions}>
+        <button type="submit" className={filterSubmitBtn} disabled={pending} aria-busy={pending}>
+          {pending ? <Loader2 className="size-4 animate-spin" /> : <Search className="size-4" />} Filter
+        </button>
+        <button type="button" className={toolbarBtn(false)} onClick={handleClear} disabled={pending}>
           Clear
-        </Button>
+        </button>
       </div>
     </form>
   );

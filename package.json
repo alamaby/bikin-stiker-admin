@@ -11,12 +11,11 @@
   "dependencies": {
     "@supabase/ssr": "*",
     "@supabase/supabase-js": "*",
-    "class-variance-authority": "*",
+    "@tailwindcss/forms": "^0.5.11",
     "clsx": "*",
     "lucide-react": "*",
     "next": "16.3.4",
     "next-intl": "*",
-    "next-themes": "*",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "server-only": "*",

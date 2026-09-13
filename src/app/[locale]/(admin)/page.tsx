@@ -1,6 +1,9 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { Users, ImagePlus, BadgeCheck, Coins, ScrollText } from "lucide-react";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import TailBadge from "@/components/ui/badge/TailBadge";
+import { buildLocaleHref } from "@/lib/locale-href";
 
 export const dynamic = "force-dynamic";
 
@@ -53,23 +56,59 @@ async function getSummary() {
   };
 }
 
+function MetricCard({
+  icon,
+  label,
+  value,
+  footer,
+  href,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  footer?: React.ReactNode;
+  href?: string;
+}) {
+  const body = (
+    <>
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white/90">
+        {icon}
+      </div>
+      <div className="mt-5 flex items-end justify-between gap-2">
+        <div>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
+          <h4 className="mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90">{value}</h4>
+        </div>
+        {footer}
+      </div>
+    </>
+  );
+  const cls = "rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6";
+  return href ? (
+    <Link href={href} className={`${cls} transition hover:shadow-theme-sm`}>
+      {body}
+    </Link>
+  ) : (
+    <div className={cls}>{body}</div>
+  );
+}
+
 export default async function DashboardPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "dashboard" });
+  const tc = await getTranslations({ locale, namespace: "common" });
   const data = await getSummary();
 
   if (!data) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-bold">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">
-              Supabase env not configured. Set SUPABASE_URL + SUPABASE_SECRET_KEY in Vercel / .env.local to see live data.
-            </p>
-          </CardContent>
-        </Card>
+      <div>
+        <PageBreadcrumb pageTitle={t("title")} homeHref={buildLocaleHref(locale, "/")} homeLabel={tc("home")} />
+        <p className="-mt-4 mb-6 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Supabase env not configured. Set SUPABASE_URL + SUPABASE_SECRET_KEY in Vercel / .env.local to see live data.
+          </p>
+        </div>
       </div>
     );
   }
@@ -77,96 +116,103 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
   const successRate = data.totalGen ? Math.round((data.successCount / Math.min(data.totalGen, 1000)) * 100) : 0;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
+    <div>
+      <PageBreadcrumb pageTitle={t("title")} homeHref={buildLocaleHref(locale, "/")} homeLabel={tc("home")} />
+      <p className="-mt-4 mb-6 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4">
+        <MetricCard
+          icon={<Users className="size-6" />}
+          label={t("totalUsers")}
+          value={data.totalUsers}
+          href={buildLocaleHref(locale, "/users")}
+          footer={
+            <TailBadge color="light" size="sm">
+              +{data.users7} / 7d
+            </TailBadge>
+          }
+        />
+        <MetricCard
+          icon={<ImagePlus className="size-6" />}
+          label={t("totalGenerations")}
+          value={data.totalGen}
+          href={buildLocaleHref(locale, "/llm-logs")}
+          footer={
+            <TailBadge color="light" size="sm">
+              +{data.gen7} / 7d
+            </TailBadge>
+          }
+        />
+        <MetricCard
+          icon={<BadgeCheck className="size-6" />}
+          label={t("successRate")}
+          value={`${successRate}%`}
+          footer={
+            <TailBadge color="light" size="sm">
+              sample 1000
+            </TailBadge>
+          }
+        />
+        <MetricCard
+          icon={<Coins className="size-6" />}
+          label={t("creditsCirculating")}
+          value={data.totalBalance}
+          footer={
+            <TailBadge color="light" size="sm">
+              +{data.gen30} / 30d
+            </TailBadge>
+          }
+        />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">{t("totalUsers")}</CardTitle>
-            <CardDescription>
-              {t("newUsers7d")}: {data.users7} · {t("newUsers30d")}: {data.users30}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data.totalUsers}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">{t("totalGenerations")}</CardTitle>
-            <CardDescription>
-              {t("generations7d")}: {data.gen7} · {t("generations30d")}: {data.gen30}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data.totalGen}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">{t("successRate")}</CardTitle>
-            <CardDescription>sample 1000</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{successRate}%</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">{t("creditsCirculating")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data.totalBalance}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("recentGenerations")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+      <div className="mt-4 grid gap-4 md:grid-cols-2 md:gap-6 md:mt-6">
+        <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+          <div className="flex items-center justify-between px-6 py-5">
+            <h3 className="text-base font-medium text-gray-800 dark:text-white/90">{t("recentGenerations")}</h3>
+            <Link href={buildLocaleHref(locale, "/llm-logs")} className="inline-flex items-center gap-1 text-sm text-brand-600 hover:underline dark:text-brand-400">
+              <ScrollText className="size-4" /> {t("title") === "Ringkasan Aplikasi" ? "Semua log" : "All logs"}
+            </Link>
+          </div>
+          <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
             {data.recent.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No data</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">No data</p>
             ) : (
               <ul className="space-y-2">
                 {data.recent.map((r) => (
-                  <li key={r.id} className="flex items-center justify-between rounded border p-2 text-sm">
-                    <span className="font-mono text-xs">{r.id.slice(0, 8)}</span>
-                    <span>{r.preset_name}</span>
-                    <Badge variant={r.status === "success" ? "default" : r.status === "failed" ? "destructive" : "secondary"}>
+                  <li key={r.id} className="flex items-center justify-between gap-2 rounded-lg border border-gray-100 p-2 text-sm dark:border-white/5">
+                    <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{r.id.slice(0, 8)}</span>
+                    <span className="flex-1 truncate text-gray-700 dark:text-gray-300">{r.preset_name}</span>
+                    <TailBadge variant="light" color={r.status === "success" ? "success" : r.status === "failed" ? "error" : "light"}>
                       {r.status}
-                    </Badge>
+                    </TailBadge>
                   </li>
                 ))}
               </ul>
             )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">{t("byProvider")}</CardTitle>
-          </CardHeader>
-          <CardContent>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+          <div className="px-6 py-5">
+            <h3 className="text-base font-medium text-gray-800 dark:text-white/90">{t("byProvider")}</h3>
+          </div>
+          <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
             {Object.keys(data.providerCounts).length === 0 ? (
-              <p className="text-sm text-muted-foreground">No logs yet</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">No logs yet</p>
             ) : (
               <ul className="space-y-2">
                 {Object.entries(data.providerCounts).map(([k, v]) => (
-                  <li key={k} className="flex justify-between text-sm">
-                    <span>{k}</span>
-                    <Badge variant="outline">{v}</Badge>
+                  <li key={k} className="flex items-center justify-between text-sm">
+                    <span className="text-gray-700 dark:text-gray-300">{k}</span>
+                    <TailBadge color="light">{v}</TailBadge>
                   </li>
                 ))}
               </ul>
             )}
-          </CardContent>
-        </Card>
+            <p className="mt-4 text-theme-xs text-gray-500 dark:text-gray-400">
+              {t("newUsers30d")}: {data.users30} · {t("generations30d")}: {data.gen30}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

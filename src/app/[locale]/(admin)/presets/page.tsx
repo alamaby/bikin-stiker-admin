@@ -1,10 +1,27 @@
 import { getTranslations } from "next-intl/server";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { LayoutGrid, List, ScrollText, Plus, Eye, ArrowUpDown, ChevronLeft, ChevronRight, Calendar } from "lucide-react";
+import { LayoutGrid, List, ScrollText, Plus, Eye, ArrowUpDown, Calendar } from "lucide-react";
 import { PresetFilterBar } from "./_components/filter-bar";
+import PageBreadcrumb from "@/components/common/PageBreadCrumb";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
+import TailBadge from "@/components/ui/badge/TailBadge";
+import Pagination from "@/components/tables/Pagination";
+import {
+  tableWrap,
+  tableScroll,
+  tableHeadRow,
+  tableBody,
+  thCell,
+  tdCell,
+  tdSub,
+  toolbarBtn,
+  primaryBtnLink,
+  ghostIconBtnLink,
+  segWrap,
+  segLink,
+  sortLink,
+} from "@/components/tables/table-styles";
+import { buildLocaleHref } from "@/lib/locale-href";
 
 export const dynamic = "force-dynamic";
 
@@ -12,10 +29,10 @@ const SORT_FIELDS = ["sort_order", "label", "created_at", "updated_at", "valid_f
 type SortField = typeof SORT_FIELDS[number];
 
 function getValidStatus(p: Record<string, unknown> & { is_active: boolean; valid_from: string | null; valid_until: string | null }, now = new Date()) {
-  if (!p.is_active) return { key: "inactive", label: "Nonaktif", variant: "secondary" as const };
-  if (p.valid_from && new Date(p.valid_from) > now) return { key: "scheduled", label: "Terjadwal", variant: "outline" as const };
-  if (p.valid_until && new Date(p.valid_until) < now) return { key: "expired", label: "Kedaluwarsa", variant: "destructive" as const };
-  return { key: "active", label: "Aktif", variant: "default" as const };
+  if (!p.is_active) return { key: "inactive", label: "Nonaktif", color: "light" as const };
+  if (p.valid_from && new Date(p.valid_from) > now) return { key: "scheduled", label: "Terjadwal", color: "light" as const };
+  if (p.valid_until && new Date(p.valid_until) < now) return { key: "expired", label: "Kedaluwarsa", color: "error" as const };
+  return { key: "active", label: "Aktif", color: "success" as const };
 }
 
 function formatWIB(iso: string | null) {
@@ -95,7 +112,7 @@ function buildUrl(locale: string, params: Record<string, string | undefined>) {
     if (v && v.trim() !== "" && v !== "all") usp.set(k, v);
   });
   const qs = usp.toString();
-  return `/${locale}/presets${qs ? `?${qs}` : ""}`;
+  return `${buildLocaleHref(locale, "/presets")}${qs ? `?${qs}` : ""}`;
 }
 
 export default async function PresetsPage({
@@ -117,6 +134,7 @@ export default async function PresetsPage({
   const page = Math.max(1, parseInt(sp.page ?? "1", 10) || 1);
   const perPage = view === "list" ? 10 : 12;
   const t = await getTranslations({ locale, namespace: "presets" });
+  const tc = await getTranslations({ locale, namespace: "common" });
 
   const result = await getPresets({ q, role, active, valid, sort, order, page, perPage });
   const total = result?.total ?? 0;
@@ -129,196 +147,164 @@ export default async function PresetsPage({
   const toggleOrder = order === "asc" ? "desc" : "asc";
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
+    <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="mb-6">
+          <PageBreadcrumb pageTitle={t("title")} homeHref={buildLocaleHref(locale, "/")} homeLabel={tc("home")} />
+          <p className="-mt-4 text-sm text-gray-500 dark:text-gray-400">{t("subtitle")}</p>
         </div>
-        <Button asChild>
-          <Link href={`/${locale}/presets/new`}>
-            <Plus className="h-4 w-4" /> Tambah Preset
-          </Link>
-        </Button>
+        <Link href={buildLocaleHref(locale, "/presets/new")} className={`${primaryBtnLink()} -mt-2 mb-6`}>
+          <Plus className="size-4" /> Tambah Preset
+        </Link>
       </div>
 
-      <Card>
-        <CardContent className="p-4 space-y-4">
-          <PresetFilterBar locale={locale} initial={{ q, role, active, valid }} />
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-            <span className="text-muted-foreground">
-              {total} preset · hal {page}/{totalPages} · sort {sort} {order}
-            </span>
-            <div className="flex items-center gap-1">
-              <Button asChild variant={sort === "sort_order" ? "secondary" : "outline"} size="sm">
-                <Link href={buildUrl(locale, { q, role, active, valid, view, sort: "sort_order", order: "asc", page: "1" })}>Urutan</Link>
-              </Button>
-              <Button asChild variant={sort === "valid_from" ? "secondary" : "outline"} size="sm">
-                <Link href={buildUrl(locale, { q, role, active, valid, view, sort: "valid_from", order: toggleOrder, page: "1" })}>
-                  Jadwal <ArrowUpDown className="h-3 w-3" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="sm">
-                <Link href={buildUrl(locale, { q, role, active, valid, view, sort, order: toggleOrder, page: "1" })}>{order === "asc" ? "↑ asc" : "↓ desc"}</Link>
-              </Button>
-              <div className="ml-2 flex items-center gap-1 rounded-md border p-1">
-                <Button asChild variant={view === "card" ? "secondary" : "ghost"} size="sm">
-                  <Link href={buildUrl(locale, { q, role, active, valid, view: "card", sort, order, page: "1" })}>
-                    <LayoutGrid className="h-4 w-4" /> Kartu
-                  </Link>
-                </Button>
-                <Button asChild variant={view === "list" ? "secondary" : "ghost"} size="sm">
-                  <Link href={buildUrl(locale, { q, role, active, valid, view: "list", sort, order, page: "1" })}>
-                    <List className="h-4 w-4" /> List
-                  </Link>
-                </Button>
-              </div>
+      <div className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+        <PresetFilterBar locale={locale} initial={{ q, role, active, valid }} />
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-theme-xs text-gray-500 dark:text-gray-400">
+            {total} preset · hal {page}/{totalPages} · sort {sort} {order}
+          </span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Link href={buildUrl(locale, { q, role, active, valid, view, sort: "sort_order", order: "asc", page: "1" })} className={toolbarBtn(sort === "sort_order")}>
+              Urutan
+            </Link>
+            <Link href={buildUrl(locale, { q, role, active, valid, view, sort: "valid_from", order: toggleOrder, page: "1" })} className={toolbarBtn(sort === "valid_from")}>
+              Jadwal <ArrowUpDown className="size-3.5" />
+            </Link>
+            <Link href={buildUrl(locale, { q, role, active, valid, view, sort, order: toggleOrder, page: "1" })} className={toolbarBtn(false)}>
+              {order === "asc" ? "↑ asc" : "↓ desc"}
+            </Link>
+            <div className={`ml-1 ${segWrap}`}>
+              <Link href={buildUrl(locale, { q, role, active, valid, view: "card", sort, order, page: "1" })} className={segLink(view === "card")}>
+                <LayoutGrid className="size-4" /> Kartu
+              </Link>
+              <Link href={buildUrl(locale, { q, role, active, valid, view: "list", sort, order, page: "1" })} className={segLink(view === "list")}>
+                <List className="size-4" /> List
+              </Link>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {!result ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">Supabase env not configured.</CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+          Supabase env not configured.
+        </div>
       ) : presets.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">Tidak ada preset cocok filter.</CardContent>
-        </Card>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 text-sm text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400">
+          Tidak ada preset cocok filter.
+        </div>
       ) : view === "list" ? (
-        <Card>
-          <CardContent className="p-0">
-            <div className="overflow-auto">
-              <table className="w-full text-sm">
-                <thead className="border-b bg-muted/50">
-                  <tr>
-                    <th className="p-2 text-left">
-                      <Link href={preserve({ sort: "sort_order", order: sort === "sort_order" && order === "asc" ? "desc" : "asc", page: "1" })} className="inline-flex items-center gap-1 hover:underline">
-                        ID / Label <ArrowUpDown className="h-3 w-3" />
+        <div className={tableWrap}>
+          <div className={tableScroll}>
+            <div className="min-w-[920px]">
+              <Table>
+                <TableHeader className={tableHeadRow}>
+                  <TableRow>
+                    <TableCell isHeader className={thCell}>
+                      <Link href={preserve({ sort: "sort_order", order: sort === "sort_order" && order === "asc" ? "desc" : "asc", page: "1" })} className={sortLink}>
+                        ID / Label <ArrowUpDown className="size-3.5" />
                       </Link>
-                    </th>
-                    <th className="p-2 text-left">Role</th>
-                    <th className="p-2 text-left">Jadwal Aktif (WIB)</th>
-                    <th className="p-2 text-left">Status</th>
-                    <th className="p-2 text-left">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
+                    </TableCell>
+                    <TableCell isHeader className={thCell}>Role</TableCell>
+                    <TableCell isHeader className={thCell}>Jadwal Aktif (WIB)</TableCell>
+                    <TableCell isHeader className={thCell}>Status</TableCell>
+                    <TableCell isHeader className={thCell}>Aksi</TableCell>
+                  </TableRow>
+                </TableHeader>
+                <TableBody className={tableBody}>
                   {presets.map((p) => {
                     const st = getValidStatus(p);
                     return (
-                      <tr key={p.id} className="border-b last:border-0 hover:bg-muted/20">
-                        <td className="p-2">
+                      <TableRow key={p.id}>
+                        <TableCell className={tdCell}>
                           <div className="flex items-center gap-2">
                             <span className="text-lg">{p.emoji ?? ""}</span>
                             <div>
-                              <div className="font-mono text-xs font-medium">{p.id}</div>
-                              <div className="text-xs">{p.label}</div>
+                              <span className="block font-mono font-medium text-theme-xs text-gray-800 dark:text-white/90">{p.id}</span>
+                              <span className="block text-theme-xs text-gray-500 dark:text-gray-400">{p.label}</span>
                             </div>
                           </div>
-                          <div className="font-mono text-[10px] text-muted-foreground">sort {p.sort_order}</div>
-                        </td>
-                        <td className="p-2">
-                          <Badge variant={p.required_role === "plus" ? "default" : "secondary"}>{p.required_role}</Badge>
-                        </td>
-                        <td className="p-2 text-xs">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 text-muted-foreground" />
+                          <span className={`${tdSub} mt-1 font-mono text-[10px]`}>sort {p.sort_order}</span>
+                        </TableCell>
+                        <TableCell className={tdCell}>
+                          <TailBadge color={p.required_role === "plus" ? "primary" : "light"}>{p.required_role}</TailBadge>
+                        </TableCell>
+                        <TableCell className={`${tdCell} text-xs`}>
+                          <span className="flex items-center gap-1">
+                            <Calendar className="size-3.5 text-gray-400" />
                             <span>{formatWIB(p.valid_from)} → {formatWIB(p.valid_until)}</span>
+                          </span>
+                        </TableCell>
+                        <TableCell className={tdCell}>
+                          <TailBadge variant="light" color={st.color}>{st.label}</TailBadge>
+                          {!p.is_active && <span className="ml-1 text-xs text-gray-500">(nonaktif)</span>}
+                        </TableCell>
+                        <TableCell className={tdCell}>
+                          <div className="flex gap-1.5">
+                            <Link href={buildLocaleHref(locale, `/presets/${p.id}`)} className={toolbarBtn(false)}>
+                              <Eye className="size-4" /> Detail
+                            </Link>
+                            <Link href={buildLocaleHref(locale, `/llm-logs?preset=${p.id}`)} title="Lihat log LLM untuk preset ini" className={ghostIconBtnLink()}>
+                              <ScrollText className="size-4" />
+                            </Link>
                           </div>
-                        </td>
-                        <td className="p-2">
-                          <Badge variant={st.variant}>{st.label}</Badge>
-                          {!p.is_active && <span className="ml-1 text-xs text-muted-foreground">(nonaktif)</span>}
-                        </td>
-                        <td className="p-2">
-                          <div className="flex gap-1">
-                            <Button asChild variant="outline" size="sm">
-                              <Link href={`/${locale}/presets/${p.id}`}>
-                                <Eye className="h-4 w-4" /> Detail
-                              </Link>
-                            </Button>
-                            <Button asChild variant="ghost" size="sm">
-                              <Link href={`/${locale}/llm-logs?preset=${p.id}`} title="Lihat log LLM untuk preset ini">
-                                <ScrollText className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 md:gap-6">
           {presets.map((p) => {
             const st = getValidStatus(p);
             return (
-              <Card key={p.id} className="flex flex-col">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <span className="text-xl">{p.emoji ?? ""}</span> {p.label}
-                  </CardTitle>
-                  <CardDescription className="flex flex-wrap gap-1">
-                    <Badge variant={p.required_role === "plus" ? "default" : "secondary"}>{p.required_role}</Badge>
-                    <Badge variant={st.variant}>{st.label}</Badge>
-                    <Badge variant="outline">sort {p.sort_order}</Badge>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="mt-auto space-y-2">
-                  <p className="font-mono text-xs text-muted-foreground">{p.id}</p>
-                  <p className="line-clamp-2 text-xs">{p.description ?? ""}</p>
-                  <div className="rounded bg-muted p-2 text-xs">
-                    <div className="flex items-center gap-1 font-medium">
-                      <Calendar className="h-3 w-3" /> Jadwal Aktif
-                    </div>
-                    <div>{formatWIB(p.valid_from)}</div>
-                    <div>s.d. {formatWIB(p.valid_until)}</div>
+              <div key={p.id} className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
+                <h3 className="flex items-center gap-2 text-base font-medium text-gray-800 dark:text-white/90">
+                  <span className="text-xl">{p.emoji ?? ""}</span> {p.label}
+                </h3>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <TailBadge color={p.required_role === "plus" ? "primary" : "light"}>{p.required_role}</TailBadge>
+                  <TailBadge variant="light" color={st.color}>{st.label}</TailBadge>
+                  <TailBadge color="light">sort {p.sort_order}</TailBadge>
+                </div>
+                <p className="mt-2 font-mono text-theme-xs text-gray-500 dark:text-gray-400">{p.id}</p>
+                <p className="line-clamp-2 text-xs text-gray-500 dark:text-gray-400">{p.description ?? ""}</p>
+                <div className="mt-2 rounded-lg bg-gray-50 p-2 text-xs text-gray-700 dark:bg-white/5 dark:text-gray-300">
+                  <div className="flex items-center gap-1 font-medium">
+                    <Calendar className="size-3.5" /> Jadwal Aktif
                   </div>
-                  <div className="flex gap-2">
-                    <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link href={`/${locale}/presets/${p.id}`}>
-                        <Eye className="h-4 w-4" /> Detail
-                      </Link>
-                    </Button>
-                    <Button asChild variant="ghost" size="sm">
-                      <Link href={`/${locale}/llm-logs?preset=${p.id}`}>
-                        <ScrollText className="h-4 w-4" /> Log
-                      </Link>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  <div>{formatWIB(p.valid_from)}</div>
+                  <div>s.d. {formatWIB(p.valid_until)}</div>
+                </div>
+                <div className="mt-4 flex gap-2">
+                  <Link href={buildLocaleHref(locale, `/presets/${p.id}`)} className={`${toolbarBtn(false)} flex-1 justify-center`}>
+                    <Eye className="size-4" /> Detail
+                  </Link>
+                  <Link href={buildLocaleHref(locale, `/llm-logs?preset=${p.id}`)} className={`${toolbarBtn(false)} gap-1.5`}>
+                    <ScrollText className="size-4" /> Log
+                  </Link>
+                </div>
+              </div>
             );
           })}
         </div>
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">
-            {total} total · {presets.length} di hal {page}
-          </p>
-          <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm" disabled={page <= 1}>
-              <Link href={buildUrl(locale, { q, role, active, valid, view, sort, order, page: String(page - 1) })} aria-disabled={page <= 1}>
-                <ChevronLeft className="h-4 w-4" /> Prev
-              </Link>
-            </Button>
-            <span className="flex items-center px-2 text-sm">
-              {page} / {totalPages}
-            </span>
-            <Button asChild variant="outline" size="sm" disabled={page >= totalPages}>
-              <Link href={buildUrl(locale, { q, role, active, valid, view, sort, order, page: String(page + 1) })} aria-disabled={page >= totalPages}>
-                Next <ChevronRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+        <div className="mt-4">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            total={total}
+            pageSize={perPage}
+            summary={(tot, shown, pg) => `${tot} total · ${shown} di hal ${pg}`}
+            getHref={(p) => buildUrl(locale, { q, role, active, valid, view, sort, order, page: String(p) })}
+          />
         </div>
       )}
     </div>

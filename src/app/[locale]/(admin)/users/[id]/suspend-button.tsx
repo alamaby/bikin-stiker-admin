@@ -3,33 +3,36 @@
 import * as React from "react";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Loader2, ShieldOff, ShieldCheck } from "lucide-react";
 import { suspendUser, unsuspendUser, type ActionState } from "./actions";
-import { Loader2, ShieldOff, ShieldCheck, AlertTriangle, CheckCircle2 } from "lucide-react";
+import Alert from "@/components/ui/alert/Alert";
+import { FormLabel, TextInput } from "@/components/form/controls";
 
 const initial: ActionState = { success: false, message: "" };
 
 function SubmitButton({ isSuspended, pending }: { isSuspended: boolean; pending: boolean }) {
   const { pending: formPending } = useFormStatus();
   const isPending = pending || formPending;
+  const base = "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium shadow-theme-xs transition disabled:cursor-not-allowed disabled:opacity-50";
+  const tone = isSuspended
+    ? "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700"
+    : "bg-error-500 text-white hover:bg-error-600";
   return (
-    <Button type="submit" variant={isSuspended ? "outline" : "destructive"} size="sm" disabled={isPending} aria-busy={isPending}>
+    <button type="submit" className={`${base} ${tone}`} disabled={isPending} aria-busy={isPending}>
       {isPending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin" /> Memproses...
+          <Loader2 className="size-4 animate-spin" /> Memproses...
         </>
       ) : isSuspended ? (
         <>
-          <ShieldCheck className="h-4 w-4" /> Cabut Suspend
+          <ShieldCheck className="size-4" /> Cabut Suspend
         </>
       ) : (
         <>
-          <ShieldOff className="h-4 w-4" /> Suspend
+          <ShieldOff className="size-4" /> Suspend
         </>
       )}
-    </Button>
+    </button>
   );
 }
 
@@ -61,16 +64,18 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
   if (isSuspended) {
     return (
       <div className="space-y-3">
-        <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm dark:border-amber-900 dark:bg-amber-950/30">
-          <p className="font-medium">Pengguna sedang disuspend</p>
-          {bannedUntil && <p className="text-xs text-muted-foreground">Sampai {new Date(bannedUntil).toLocaleString("id-ID")}</p>}
-          <p className="text-xs text-muted-foreground">Pengguna tidak dapat login atau generate stiker selama suspend.</p>
-        </div>
+        <Alert
+          variant="warning"
+          title="Pengguna sedang disuspend"
+          message={`${bannedUntil ? `Sampai ${new Date(bannedUntil).toLocaleString("id-ID")}. ` : ""}Pengguna tidak dapat login atau generate stiker selama suspend.`}
+        />
         {showUnsuspendToast && unsuspendState.message && (
-          <div className={`flex items-center gap-2 rounded-md border p-3 text-sm ${unsuspendState.success ? "border-green-600/30 bg-green-50 dark:bg-green-950/30" : "border-destructive/30 bg-destructive/10"}`}>
-            {unsuspendState.success ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-destructive" />}
-            <span>{unsuspendState.message}</span>
-          </div>
+          <Alert
+            variant={unsuspendState.success ? "success" : "error"}
+            title={unsuspendState.success ? "Berhasil" : "Gagal"}
+            message={unsuspendState.message}
+            onClose={() => setShowUnsuspendToast(false)}
+          />
         )}
         <form action={unsuspendAction} className="flex gap-2">
           <input type="hidden" name="id" value={id} />
@@ -83,19 +88,21 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
   return (
     <div className="space-y-3">
       {showSuspendToast && suspendState.message && (
-        <div className={`flex items-center gap-2 rounded-md border p-3 text-sm ${suspendState.success ? "border-green-600/30 bg-green-50 dark:bg-green-950/30" : "border-destructive/30 bg-destructive/10"}`}>
-          {suspendState.success ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <AlertTriangle className="h-4 w-4 text-destructive" />}
-          <span>{suspendState.message}</span>
-        </div>
+        <Alert
+          variant={suspendState.success ? "success" : "error"}
+          title={suspendState.success ? "Berhasil" : "Gagal"}
+          message={suspendState.message}
+          onClose={() => setShowSuspendToast(false)}
+        />
       )}
       <form action={suspendAction} className="space-y-2">
         <input type="hidden" name="id" value={id} />
-        <div className="grid gap-1">
-          <Label>Alasan suspend (opsional)</Label>
-          <Input name="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Misal: spam, abuse" disabled={suspendPending} />
+        <div>
+          <FormLabel>Alasan suspend (opsional)</FormLabel>
+          <TextInput name="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Misal: spam, abuse" disabled={suspendPending} />
         </div>
         <SubmitButton isSuspended={false} pending={suspendPending} />
-        <p className="text-xs text-muted-foreground">Suspend akan memblokir login selama ~10 tahun (bisa dicabut kapan saja).</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">Suspend akan memblokir login selama ~10 tahun (bisa dicabut kapan saja).</p>
       </form>
     </div>
   );

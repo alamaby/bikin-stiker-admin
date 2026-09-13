@@ -9,9 +9,12 @@
     "save": "Save",
     "cancel": "Cancel",
     "search": "Search",
-    "actions": "Actions"
+    "actions": "Actions",
+    "home": "Home"
   },
   "nav": {
+    "menu": "Menu",
+    "manage": "Manage",
     "dashboard": "Dashboard",
     "users": "Users",
     "llmConfig": "LLM Config",
