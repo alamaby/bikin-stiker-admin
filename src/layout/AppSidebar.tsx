@@ -7,7 +7,7 @@ import React, { useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { LayoutDashboard, Users, SlidersHorizontal, ScrollText, Palette } from "lucide-react";
+import { LayoutDashboard, Users, SlidersHorizontal, ScrollText, Palette, Images } from "lucide-react";
 import { useSidebar } from "@/context/SidebarContext";
 import { buildLocaleHref, isActivePath } from "@/lib/locale-href";
 
@@ -35,6 +35,7 @@ export default function AppSidebar({ locale }: { locale: string }) {
   const manageItems: NavItem[] = [
     { icon: <SlidersHorizontal className="size-5" />, name: t("llmConfig"), path: buildLocaleHref(locale, "/llm-config") },
     { icon: <ScrollText className="size-5" />, name: t("llmLogs"), path: buildLocaleHref(locale, "/llm-logs") },
+    { icon: <Images className="size-5" />, name: t("stickers"), path: buildLocaleHref(locale, "/stickers") },
     { icon: <Palette className="size-5" />, name: t("presets"), path: buildLocaleHref(locale, "/presets") },
   ];
 

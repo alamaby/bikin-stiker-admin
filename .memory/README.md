@@ -1,27 +1,29 @@
 # Project Memory
 
-Last updated: 2026-09-13 malam (WIB, sesi test suite)
+Last updated: 2026-09-23 00:00:00 (WIB)
 Format version: 1
 
 ## Current State
-- Aplikasi bikin-stiker-admin sudah dimigrasi penuh ke layout/komponen TailAdmin (free-nextjs-admin-dashboard v2.3.0, MIT).
-- Shell: AppSidebar (MENU/MANAJEMEN, collapsible 290/90px, auto-close drawer di mobile) + AppHeader sticky (search ⌘K redirect, locale ID/EN, theme, lonceng, user) + Backdrop + AdminShell.
-- Tema penuh: font Outfit, ThemeContext (light|dark + localStorage), token brand/gray/success/error/warning, utilitas menu-item.
-- 4 halaman tabel (Users, LLM Config, LLM Logs, Presets) + dashboard + login/unauthorized sudah gaya TailAdmin; logic Supabase/RSC/middleware tidak berubah; bug locale next-intl pre-existing diperbaiki (setRequestLocale).
-- Migrasi utama ter-commit + push (`adc2611`, `e5d99f7`, `7236b05`).
-- Test suite Vitest (Fase 1–3) selesai: 14 files / 72 tests hijau; `npm test` jadi gate
-  verifikasi; Playwright E2E masih TODO. Lihat `.memory/2026-09-13/test-suite-vitest.md`.
-- `npm run lint` bersih; `npm run build` lolos (13 routes, login/unauthorized SSG
-  per-locale); verifikasi browser ID+EN+mobile selesai.
+- Aplikasi bikin-stiker-admin sudah dimigrasi penuh ke layout/komponen TailAdmin.
+- Menu admin `/stickers` (list + detail) untuk mengelola `sticker_generations` telah selesai diimplementasi sesuai plan `plans/2026-09-22-sticker-generation-management-plan.md`.
+- Fitur: paginasi DB-side + sorting + filter 8 field (q/status/provider/model/rating/flagged/date), thumbnail via signed URL, download, copy final_prompt, badge status+flag, detail page 8 section (preview/prompt/performance/rating/moderation/raw), server action flag/unflag dengan modal confirm.
+- Migrasi kolom moderasi dibuat: `supabase/migrations/20260922000001_sticker_moderation_flag.sql` (belum di-apply ke remote — lihat OPEN-2).
+- Test suite: 18 test files / 94 tests hijau.
+- `npm run lint` bersih (2 warnings for `<img>` yang disengaja).
+- `npm run build` lolos: 15 routes (+2 new: `/[locale]/stickers`, `/[locale]/stickers/[id]`).
+- Sidebar sudah ditambahkan item "Stiker" di antara LLM Logs dan Presets.
 
 ## Active Decisions
-- Port selektif TailAdmin (tidak clone repo): file di `src/layout/`, `src/context/`, `src/components/{header,common,ui}/` dengan atribusi MIT di header file — agar middleware Supabase + locale routing + validasi env Zod tetap utuh. Lihat `.memory/2026-09-13/121300-tailadmin-layout-migration.md`.
-- next-themes + class-variance-authority dihapus; ikon tetap lucide-react (tanpa @svgr/webpack); SidebarWidget promo TailAdmin tidak dibawa.
-- Locale prefix ditangani helper `stripLocale`/`buildLocaleHref`/`isActivePath` (`src/lib/locale-href.ts`).
-- Badge lama (`default/secondary/outline/destructive`) dipertahankan sebagai wrapper kompatibel di atas TailBadge.
+- Download via signed URL 60dtk (list) / 300dtk (detail); tidak ada retry otomatis (keputusan sadar — refresh halaman jika kedaluwarsa).
+- Filter rating per-halaman (bukan DB-wide count) — documented di UI sebagai keterbatasan.
+- Provider di filter bar hardcode 7 enum (sama seperti llm-logs) — OPEN-4.
+- `<img>` dipakai alih-alih `next/image` untuk menghindari perluasan `remotePatterns` di next.config (plan explicitly out of scope).
 
 ## Open Items / Blockers
-- Tidak ada blocker. Setelah commit lanjutan ini, migrasi TailAdmin selesai penuh dan siap merge.
+- OPEN-1 (blocker penegakan, BUKAN blocker admin): query Flutter/Showcase belum filter `is_flagged=false`.
+- OPEN-2: migrasi `20260922000001_sticker_moderation_flag.sql` belum di-apply ke remote sebelum deploy.
+- OPEN-3: count pagination saat filter rating aktif hanya per-halaman, bukan akurat global.
+- OPEN-4: daftar provider di filter bar hardcode (bisa basi).
 
 ## Legacy Archive
 - Tidak ada `PROJECT_MEMORY.md` — ini memori awal proyek.
@@ -31,3 +33,4 @@ Format version: 1
 - [2026-09-13 Follow-up: mobile + EN verification fixes](2026-09-13/followup-mobile-en-verification.md)
 - [2026-09-13 Review: implementation vs plan](2026-09-13/review-tailadmin-vs-plan.md)
 - [2026-09-13 Test suite Vitest](2026-09-13/test-suite-vitest.md)
+- [2026-09-23 Sticker generation management menu](2026-09-23/sticker-generation-management-menu.md)
