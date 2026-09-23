@@ -5,6 +5,8 @@ import {
   resolveStickerStoragePath,
   formatDurationMs,
   ratingLabel,
+  countActiveFilters,
+  hasActiveFilters,
 } from "@/lib/stickers";
 
 describe("parseStickerParams", () => {
@@ -77,5 +79,26 @@ describe("formatDurationMs + ratingLabel", () => {
     expect(ratingLabel(1)).toBe("up");
     expect(ratingLabel(-1)).toBe("down");
     expect(ratingLabel(null)).toBe("unrated");
+  });
+});
+
+describe("countActiveFilters + hasActiveFilters", () => {
+  const empty = { q: "", status: "all", provider: "all", model: "all", rating: "all", flagged: "all", date_from: "", date_to: "" };
+
+  it("returns 0 for all defaults", () => {
+    expect(countActiveFilters(empty)).toBe(0);
+  });
+
+  it("counts q and status as 2 active", () => {
+    expect(countActiveFilters({ ...empty, q: "cat", status: "success" })).toBe(2);
+  });
+
+  it("does not count model when value is 'all'", () => {
+    expect(countActiveFilters({ ...empty, model: "all" })).toBe(0);
+  });
+
+  it("returns true/false for hasActiveFilters", () => {
+    expect(hasActiveFilters(empty)).toBe(false);
+    expect(hasActiveFilters({ ...empty, q: "x" })).toBe(true);
   });
 });

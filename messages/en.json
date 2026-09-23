@@ -77,7 +77,9 @@
     "down": "Down",
     "unrated": "Unrated",
     "flagged": "Flagged",
-    "clean": "Clean"
+    "clean": "Clean",
+    "pickDate": "Pick date",
+    "clearDate": "Clear date"
   },
   "header": {
     "searchPlaceholder": "Search logs, users, presets...",
@@ -243,6 +245,20 @@
     "errorCode": "Code",
     "reasonTags": "Reason tags",
     "note": "Note",
-    "genDuration": "Generation duration"
+    "genDuration": "Generation duration",
+    "summary": {
+      "title": "Summary",
+      "total": "Total",
+      "successRate": "Success rate",
+      "avgDuration": "Avg duration",
+      "flagged": "Flagged",
+      "feedback": "Feedback",
+      "trend": "Daily trend",
+      "byProvider": "By provider",
+      "credits": "credits",
+      "noData": "No data yet"
+    },
+    "flagShort": "Flag",
+    "unflagShort": "Unflag"
   }
 }

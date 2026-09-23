@@ -70,3 +70,40 @@ export function ratingLabel(rating: number | null | undefined): string {
   if (rating === -1) return "down";
   return "unrated";
 }
+
+export type ProviderModelMap = Record<string, string[]>;
+
+export function countActiveFilters(f: {
+  q: string;
+  status: string;
+  provider: string;
+  model: string;
+  rating: string;
+  flagged: string;
+  date_from: string;
+  date_to: string;
+}): number {
+  let n = 0;
+  if (f.q !== "") n += 1;
+  if (f.status !== "all") n += 1;
+  if (f.provider !== "all") n += 1;
+  if (f.rating !== "all") n += 1;
+  if (f.flagged !== "all") n += 1;
+  if (f.model !== "" && f.model !== "all") n += 1;
+  if (f.date_from !== "") n += 1;
+  if (f.date_to !== "") n += 1;
+  return n;
+}
+
+export function hasActiveFilters(f: {
+  q: string;
+  status: string;
+  provider: string;
+  model: string;
+  rating: string;
+  flagged: string;
+  date_from: string;
+  date_to: string;
+}): boolean {
+  return countActiveFilters(f) > 0;
+}

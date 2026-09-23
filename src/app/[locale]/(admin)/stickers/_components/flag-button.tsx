@@ -53,18 +53,18 @@ export function FlagButton({ id, isFlagged }: { id: string; isFlagged: boolean }
           onClick={handleUnflag}
           disabled={pending}
           aria-busy={pending}
-          className="inline-flex h-6 items-center gap-1 rounded px-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:ring-gray-700 dark:hover:bg-white/[0.03]"
+          className="inline-flex h-7 items-center gap-1 rounded px-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:ring-gray-700 dark:hover:bg-white/[0.03]"
         >
-          {pending ? <Loader2 className="size-3 animate-spin" /> : null} {t("unflag")}
+          {pending ? <Loader2 className="size-3 animate-spin" /> : null} {t("unflagShort")}
         </button>
       ) : (
         <button
           onClick={() => setConfirmOpen(true)}
           disabled={pending}
           aria-busy={pending}
-          className="inline-flex h-6 items-center gap-1 rounded px-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:ring-gray-700 dark:hover:bg-white/[0.03]"
+          className="inline-flex h-7 items-center gap-1 rounded px-2 text-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:ring-gray-700 dark:hover:bg-white/[0.03]"
         >
-          {t("flag")}
+          {t("flagShort")}
         </button>
       )}
       <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} className="max-w-md p-6">

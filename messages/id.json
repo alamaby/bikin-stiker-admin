@@ -77,7 +77,9 @@
     "down": "Tidak suka",
     "unrated": "Belum dinilai",
     "flagged": "Ditandai",
-    "clean": "Bersih"
+    "clean": "Bersih",
+    "pickDate": "Pilih tanggal",
+    "clearDate": "Hapus tanggal"
   },
   "header": {
     "searchPlaceholder": "Cari log, pengguna, preset...",
@@ -242,6 +244,20 @@
     "errorCode": "Kode",
     "reasonTags": "Tag alasan",
     "note": "Catatan",
-    "genDuration": "Durasi generate"
+    "genDuration": "Durasi generate",
+    "summary": {
+      "title": "Ringkasan",
+      "total": "Total",
+      "successRate": "Tingkat sukses",
+      "avgDuration": "Durasi rata-rata",
+      "flagged": "Ditandai",
+      "feedback": "Penilaian",
+      "trend": "Tren harian",
+      "byProvider": "Per provider",
+      "credits": "kredit",
+      "noData": "Belum ada data"
+    },
+    "flagShort": "Tandai",
+    "unflagShort": "Batalkan"
   }
 }

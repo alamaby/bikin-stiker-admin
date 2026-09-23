@@ -9,9 +9,9 @@ export function StickerThumb({ signedUrl, alt }: { signedUrl: string | null; alt
     <img
       src={signedUrl}
       alt={alt}
-      width={64}
-      height={64}
-      className="h-16 w-16 rounded-lg object-cover ring-1 ring-gray-200 dark:ring-gray-700"
+      width={48}
+      height={48}
+      className="h-12 w-12 rounded-lg object-cover ring-1 ring-gray-200 dark:ring-gray-700"
       loading="lazy"
     />
   );

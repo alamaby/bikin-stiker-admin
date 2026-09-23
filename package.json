@@ -20,6 +20,7 @@
     "next-intl": "*",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "recharts": "^2.15.4",
     "server-only": "*",
     "tailwind-merge": "*",
     "zod": "*"

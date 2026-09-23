@@ -18,7 +18,7 @@ vi.mock("@/app/[locale]/(admin)/stickers/actions", () => ({
 describe("FlagButton", () => {
   it("shows unflag button when already flagged", () => {
     renderWithIntl(<FlagButton id="abc" isFlagged />);
-    expect(screen.getByRole("button", { name: /cabut tanda/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /batalkan/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /tandai/i })).not.toBeInTheDocument();
   });
 
@@ -34,5 +34,10 @@ describe("FlagButton", () => {
     await user.click(screen.getByRole("button", { name: /tandai/i }));
     expect(screen.getByText(/tandai stiker/i)).toBeInTheDocument();
     expect(screen.getByText(/abc-123/i)).toBeInTheDocument();
+  });
+
+  it("unflag button renders label Batalkan", () => {
+    renderWithIntl(<FlagButton id="xyz" isFlagged />);
+    expect(screen.getByRole("button", { name: "Batalkan" })).toBeInTheDocument();
   });
 });
