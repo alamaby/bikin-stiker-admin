@@ -1,0 +1,6 @@
+# Gitleaks ignore list
+# Format: [commit-hash]:[file-path]:[rule-id]:[line-number] or [fingerprint]
+
+# Ignore dummy placeholder tokens in commit e422588
+e422588c58e05287336a85bc60939148caa03764:.github/workflows/ci.yml:generic-api-key:21
+e422588c58e05287336a85bc60939148caa03764:.github/workflows/ci.yml:generic-api-key:22

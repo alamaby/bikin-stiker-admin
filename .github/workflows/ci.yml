@@ -17,9 +17,9 @@ jobs:
     env:
       CI: "true"
       # Dummy environment variables for Next.js static build validation
-      SUPABASE_URL: "https://placeholder-ref.supabase.co"
-      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_placeholder_eyJhbGciOiJIUzI1NiJ9_placeholder_20chars"
-      SUPABASE_SECRET_KEY: "sb_secret_placeholder_eyJhbGciOiJIUzI1NiJ9_placeholder_20chars"
+      SUPABASE_URL: "https://dummy-ref.supabase.co"
+      SUPABASE_PUBLISHABLE_KEY: "dummy-supabase-publishable-key-for-ci-build"
+      SUPABASE_SECRET_KEY: "dummy-supabase-secret-key-for-ci-build"
       ADMIN_EMAILS: "admin@bikinstiker.com"
       NEXT_PUBLIC_APP_URL: "http://localhost:3000"
 
@@ -30,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
 
       - name: Install dependencies
