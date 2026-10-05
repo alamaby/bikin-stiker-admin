@@ -1,0 +1,57 @@
+name: CI Quality Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+    env:
+      CI: "true"
+      # Dummy environment variables for Next.js static build validation
+      SUPABASE_URL: "https://placeholder-ref.supabase.co"
+      SUPABASE_PUBLISHABLE_KEY: "sb_publishable_placeholder_eyJhbGciOiJIUzI1NiJ9_placeholder_20chars"
+      SUPABASE_SECRET_KEY: "sb_secret_placeholder_eyJhbGciOiJIUzI1NiJ9_placeholder_20chars"
+      ADMIN_EMAILS: "admin@bikinstiker.com"
+      NEXT_PUBLIC_APP_URL: "http://localhost:3000"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit & Component Tests
+        run: npm run test
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('src/**/*.ts', 'src/**/*.tsx', 'messages/**/*.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Production Build
+        run: npm run build

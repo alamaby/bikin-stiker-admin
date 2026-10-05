@@ -83,6 +83,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...placeholder
 
 ## Verifikasi
 ```bash
+npm run typecheck
 npm run lint
 npm test
 npm run build
