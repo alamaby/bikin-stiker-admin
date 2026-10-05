@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/supabase/auth-guard";
 
 export type ActionState = { success: boolean; message: string };
 
 async function doUpdate(formData: FormData): Promise<void> {
+  await requireAdmin();
   const id = String(formData.get("id") ?? "");
   const priority = Number(formData.get("priority"));
   const is_active = formData.get("is_active") === "on" || formData.get("is_active") === "true";

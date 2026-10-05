@@ -236,7 +236,7 @@ export function StickerFilterBar({
                 value={dateTo}
                 onChange={setDateTo}
                 disabled={pending}
-                ariaLabel={t("clearDate")}
+                ariaLabel={t("pickDate")}
               />
             </div>
             <div className={`${filterActions} lg:col-span-4`}>

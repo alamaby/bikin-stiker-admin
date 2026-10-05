@@ -305,6 +305,8 @@ export default async function PresetsPage({
             pageSize={perPage}
             summary={(tot, shown, pg) => `${tot} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
             getHref={(p) => buildUrl(locale, { q, role, active, valid, view, sort, order, page: String(p) })}
+            prevLabel={tc("prev")}
+            nextLabel={tc("next")}
           />
         </div>
       )}

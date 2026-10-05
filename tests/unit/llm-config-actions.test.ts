@@ -4,6 +4,10 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("@/lib/supabase/auth-guard", () => ({
+  requireAdmin: vi.fn(async () => ({ id: "admin-1", email: "admin@example.com" })),
+}));
+
 const updateMock = vi.fn();
 let capturedUpdate: Record<string, unknown> | null = null;
 

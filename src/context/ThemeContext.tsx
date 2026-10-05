@@ -20,7 +20,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    const initialTheme = savedTheme || "light";
+    const initialTheme =
+      savedTheme || (typeof document !== "undefined" && document.documentElement.classList.contains("dark") ? "dark" : "light");
     // Intentional sync from localStorage after mount to avoid hydration mismatch (TailAdmin pattern).
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(initialTheme);

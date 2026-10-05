@@ -4,6 +4,10 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock("@/lib/supabase/auth-guard", () => ({
+  requireAdmin: vi.fn(async () => ({ id: "admin-1", email: "admin@example.com" })),
+}));
+
 // Mirrors Supabase chain: from(table).update(payload).eq(col, val) -> { error }
 const fromMock = vi.fn();
 const updateMock = vi.fn();

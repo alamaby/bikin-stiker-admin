@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireAdmin } from "@/lib/supabase/auth-guard";
 
 function svc() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -11,7 +12,20 @@ function svc() {
 
 export type ActionState = { success: boolean; message: string };
 
+function parseWibToUtcIso(input: string | null): string | null {
+  if (!input) return null;
+  const trimmed = input.trim();
+  if (!trimmed) return null;
+  // If no timezone offset is provided (standard datetime-local format YYYY-MM-DDTHH:mm), treat as WIB (+07:00)
+  const hasTimezone = /[Z+-]\d{2}(?::?\d{2})?$/.test(trimmed) || trimmed.endsWith("Z");
+  const isoCandidate = hasTimezone ? trimmed : `${trimmed}:00+07:00`;
+  const d = new Date(isoCandidate);
+  if (isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
 async function doUpsert(formData: FormData) {
+  await requireAdmin();
   const supabase = await svc();
   const id = String(formData.get("id") ?? "").trim();
   const label = String(formData.get("label") ?? "").trim();
@@ -39,8 +53,8 @@ async function doUpsert(formData: FormData) {
     sort_order: Number.isFinite(sort_order) ? sort_order : 100,
     is_active,
     cost_override,
-    valid_from: valid_from ? new Date(valid_from).toISOString() : null,
-    valid_until: valid_until ? new Date(valid_until).toISOString() : null,
+    valid_from: parseWibToUtcIso(valid_from),
+    valid_until: parseWibToUtcIso(valid_until),
     updated_at: new Date().toISOString(),
   };
 
@@ -67,10 +81,12 @@ export async function upsertPresetWithState(_prev: ActionState, formData: FormDa
 export async function createPresetAndRedirect(formData: FormData) {
   await doUpsert(formData);
   const id = String(formData.get("id") ?? "").trim();
-  redirect(`/id/presets/${id}`);
+  const locale = String(formData.get("locale") ?? "id") || "id";
+  redirect(`/${locale}/presets/${id}`);
 }
 
 async function doDelete(id: string) {
+  await requireAdmin();
   if (!id) throw new Error("Missing id");
   const supabase = await svc();
   const { error } = await supabase.from("sticker_presets").delete().eq("id", id);

@@ -17,14 +17,15 @@ const initialState: ActionState = { success: false, message: "" };
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("common");
   return (
     <button type="submit" className={filterSubmitBtn} disabled={pending} aria-busy={pending}>
       {pending ? (
         <>
-          <Loader2 className="size-4 animate-spin" /> Menyimpan...
+          <Loader2 className="size-4 animate-spin" /> {t("saving")}
         </>
       ) : (
-        "Save"
+        t("save")
       )}
     </button>
   );
@@ -34,6 +35,7 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
   const [state, formAction, isPending] = useActionState(updateLlmConfigWithState, initialState);
   const [showToast, setShowToast] = React.useState(false);
   const t = useTranslations("common");
+  const tl = useTranslations("llmConfig");
 
   // Show toast when action completes
   React.useEffect(() => {
@@ -61,7 +63,7 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
       <form action={formAction} className="grid gap-4 md:grid-cols-2">
         <input type="hidden" name="id" value={config.id} />
         <div>
-          <FormLabel>Provider *</FormLabel>
+          <FormLabel>{tl("provider")} *</FormLabel>
           <SelectInput name="provider_name" defaultValue={config.provider_name} disabled={isPending}>
             <option value="openrouter">openrouter</option>
             <option value="gemini">gemini</option>
@@ -81,7 +83,7 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
           </SelectInput>
         </div>
         <div>
-          <FormLabel>Model *</FormLabel>
+          <FormLabel>{tl("model")} *</FormLabel>
           <TextInput name="model_name" defaultValue={config.model_name} required disabled={isPending} />
         </div>
         <div>
@@ -93,15 +95,15 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
           <TextInput name="label" defaultValue={config.label ?? ""} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Priority</FormLabel>
+          <FormLabel>{tl("priority")}</FormLabel>
           <TextInput name="priority" type="number" defaultValue={config.priority} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Timeout (ms)</FormLabel>
+          <FormLabel>{tl("timeout")}</FormLabel>
           <TextInput name="timeout_ms" type="number" defaultValue={config.timeout_ms} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Fallback</FormLabel>
+          <FormLabel>{tl("fallback")}</FormLabel>
           <SelectInput name="fallback_policy" defaultValue={config.fallback_policy} disabled={isPending}>
             <option value="retryable_only">retryable_only</option>
             <option value="always">always</option>
@@ -110,7 +112,7 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
         </div>
         <div className="flex items-center gap-2 pt-6">
           <CheckBox name="is_active" defaultChecked={config.is_active} disabled={isPending} />
-          <FormLabel className="mb-0">Active</FormLabel>
+          <FormLabel className="mb-0">{tl("active")}</FormLabel>
         </div>
         <div className="md:col-span-2">
           <FormLabel>Notes</FormLabel>
@@ -125,17 +127,17 @@ export function DetailForm({ config, locale, masked }: { config: any; locale: st
             placeholder='{"temperature":0.7}'
             disabled={isPending}
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Harus JSON valid. Kosongkan untuk tidak mengubah.</p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{tl("jsonNote")}</p>
         </div>
         <div className="md:col-span-2">
           <FormLabel>API Key (masked – kosongkan untuk keep)</FormLabel>
           <TextInput name="api_key" type="password" placeholder={masked} autoComplete="off" disabled={isPending} />
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Replace-only. Untuk Vault gunakan SQL manual.</p>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{tl("apiKeyNote")}</p>
         </div>
         <div className="flex gap-2 md:col-span-2">
           <SubmitButton />
           <Link href={buildLocaleHref(locale, "/llm-config")} className={toolbarBtn(false)}>
-            Cancel
+            {t("cancel")}
           </Link>
         </div>
       </form>

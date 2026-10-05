@@ -8,6 +8,10 @@ vi.mock("next/navigation", () => ({
   redirect: vi.fn(),
 }));
 
+vi.mock("@/lib/supabase/auth-guard", () => ({
+  requireAdmin: vi.fn(async () => ({ id: "admin-1", email: "admin@example.com" })),
+}));
+
 // Chainable Supabase stub: .from() -> table builder whose terminal method
 // resolves { error: null } (or a configured error).
 const terminalMocks = {
@@ -120,5 +124,22 @@ describe("deletePresetWithState", () => {
     const res = await deletePresetWithState({ success: false, message: "" }, formData({ id: "" }));
     expect(res.success).toBe(false);
     expect(res.message).toContain("Missing id");
+  });
+});
+
+describe("createPresetAndRedirect", () => {
+  it("redirects to the specified locale preset detail page", async () => {
+    const { redirect } = await import("next/navigation");
+    const { createPresetAndRedirect } = await import("@/app/[locale]/(admin)/presets/actions");
+    await createPresetAndRedirect(formData({ ...VALID, id: "cyberpunk", locale: "en" }));
+    expect(redirect).toHaveBeenCalledWith("/en/presets/cyberpunk");
+  });
+
+  it("converts WIB local date to UTC ISO string properly", async () => {
+    const { upsertPresetWithState } = await import("@/app/[locale]/(admin)/presets/actions");
+    await upsertPresetWithState({ success: false, message: "" }, formData({ ...VALID, valid_from: "2026-09-01T07:00" }));
+    const payload = terminalMocks.upsert.mock.calls[0][0] as Record<string, unknown>;
+    // 07:00 WIB (+7) is 00:00 UTC
+    expect(payload.valid_from).toBe("2026-09-01T00:00:00.000Z");
   });
 });

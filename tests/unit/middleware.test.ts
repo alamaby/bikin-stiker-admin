@@ -25,20 +25,15 @@ function makeRequest(pathname: string, opts?: { acceptLanguage?: string }): Fake
 }
 
 // ---- Mocks ----
-const updateSessionMock = vi.fn(async () => ({ __kind: "next" as const }));
+let mockUser: { email?: string } | null = null;
+
+const updateSessionMock = vi.fn(async () => ({
+  response: { __kind: "next" as const },
+  user: mockUser,
+}));
 
 vi.mock("@/lib/supabase/middleware", () => ({
   updateSession: () => updateSessionMock(),
-}));
-
-let mockUser: { email?: string } | null = null;
-
-vi.mock("@supabase/ssr", () => ({
-  createServerClient: vi.fn(() => ({
-    auth: {
-      getUser: async () => ({ data: { user: mockUser } }),
-    },
-  })),
 }));
 
 vi.mock("next/server", () => ({

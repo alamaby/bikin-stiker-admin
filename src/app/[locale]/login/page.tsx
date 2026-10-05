@@ -61,16 +61,6 @@ function LoginCard() {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) throw signInError;
       if (!data.user) throw new Error("No user");
-      // Client-side whitelist check for UX (middleware also enforces)
-      const allow = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      if (!allow.includes((data.user.email ?? "").toLowerCase())) {
-        await supabase.auth.signOut();
-        setError(t("notAdmin"));
-        return;
-      }
       router.push(next);
       router.refresh();
     } catch (err: unknown) {

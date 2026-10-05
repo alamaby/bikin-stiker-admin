@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/supabase/auth-guard";
 
 function svc() {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -15,6 +16,7 @@ export async function flagStickerWithState(_prev: ActionState, formData: FormDat
   const reason = String(formData.get("reason") ?? "").trim().slice(0, 500) || null;
   if (!id) return { success: false, message: "Missing id" };
   try {
+    await requireAdmin();
     const supabase = await svc();
     const { error } = await supabase
       .from("sticker_generations")
@@ -34,6 +36,7 @@ export async function unflagStickerWithState(_prev: ActionState, formData: FormD
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return { success: false, message: "Missing id" };
   try {
+    await requireAdmin();
     const supabase = await svc();
     const { error } = await supabase
       .from("sticker_generations")

@@ -251,6 +251,8 @@ export default async function UsersPage({
               pageSize={perPage}
               summary={(total, shown, pg) => `${total} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
               getHref={(p) => buildUrl(locale, { q, tier, status, sort, order, page: String(p) })}
+              prevLabel={tc("prev")}
+              nextLabel={tc("next")}
             />
           </div>
         </>

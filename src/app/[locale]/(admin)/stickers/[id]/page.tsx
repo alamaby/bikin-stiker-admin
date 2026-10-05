@@ -140,7 +140,7 @@ export default async function StickerDetailPage({ params }: { params: Promise<{ 
           </div>
           <div className="space-y-4 border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
             <div>
-              <p className={`mb-1 ${t("finalPrompt")}`}>{t("finalPrompt")}:</p>
+              <p className="mb-1 font-medium text-gray-700 dark:text-gray-300">{t("finalPrompt")}:</p>
               <PromptCell text={row.final_prompt || row.user_prompt || ""} />
             </div>
             {row.negative_prompt && (

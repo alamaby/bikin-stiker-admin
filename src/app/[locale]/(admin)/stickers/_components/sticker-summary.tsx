@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   ResponsiveContainer,
@@ -50,9 +51,9 @@ function SummaryCard({
   );
   const cls = "rounded-2xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]";
   return href ? (
-    <a href={href} className={`${cls} transition hover:shadow-theme-sm block`}>
+    <Link href={href} className={`${cls} transition hover:shadow-theme-sm block`}>
       {body}
-    </a>
+    </Link>
   ) : (
     <div className={cls}>{body}</div>
   );
@@ -63,7 +64,8 @@ export function StickerSummary({ data, locale }: { data: StickerSummaryData | nu
   if (!data) return null;
 
   const successPct = Math.round((data.success / Math.max(1, data.total)) * 100);
-  const downPct = Math.round((data.down / Math.max(1, data.up + data.down)) * 100);
+  const totalFeedback = data.up + data.down;
+  const upPct = totalFeedback > 0 ? Math.round((data.up / totalFeedback) * 100) : 0;
 
   return (
     <div className="mb-4">
@@ -101,9 +103,9 @@ export function StickerSummary({ data, locale }: { data: StickerSummaryData | nu
           label={t("summary.feedback")}
           value={`${data.up}/${data.down}`}
           footer={
-            <div className="mt-1 flex h-2 w-full overflow-hidden rounded-full">
-              <div className="bg-success-500" style={{ width: `${downPct}%` }} />
-              <div className="bg-error-500" style={{ width: `${100 - downPct}%` }} />
+            <div className="mt-1 flex h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+              <div className="bg-success-500" style={{ width: `${upPct}%` }} />
+              <div className="bg-error-500" style={{ width: `${totalFeedback > 0 ? 100 - upPct : 0}%` }} />
             </div>
           }
         />

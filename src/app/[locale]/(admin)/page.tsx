@@ -24,13 +24,13 @@ async function getSummary() {
     supabase.from("user_wallets").select("*", { count: "exact", head: true }).gte("updated_at", ago30),
   ]);
 
-  const [{ count: totalGen }, { count: gen7 }, { count: gen30 }] = await Promise.all([
+  const [{ count: totalGen }, { count: gen7 }, { count: gen30 }, { count: successCount }] = await Promise.all([
     supabase.from("sticker_generations").select("*", { count: "exact", head: true }),
     supabase.from("sticker_generations").select("*", { count: "exact", head: true }).gte("created_at", ago7),
     supabase.from("sticker_generations").select("*", { count: "exact", head: true }).gte("created_at", ago30),
+    supabase.from("sticker_generations").select("*", { count: "exact", head: true }).eq("status", "success"),
   ]);
 
-  const { data: successRows } = await supabase.from("sticker_generations").select("status").eq("status", "success").limit(1000);
   const { data: recent } = await supabase.from("sticker_generations").select("id,preset_name,status,created_at").order("created_at", { ascending: false }).limit(5);
   const { data: providers } = await supabase.from("image_generation_attempt_logs").select("provider_name").order("created_at", { ascending: false }).limit(100);
   const { data: wallets } = await supabase.from("user_wallets").select("balance").limit(1000);
@@ -49,7 +49,7 @@ async function getSummary() {
     totalGen: totalGen ?? 0,
     gen7: gen7 ?? 0,
     gen30: gen30 ?? 0,
-    successCount: successRows?.length ?? 0,
+    successCount: successCount ?? 0,
     recent: recent ?? [],
     totalBalance,
     providerCounts,
@@ -113,7 +113,7 @@ export default async function DashboardPage({ params }: { params: Promise<{ loca
     );
   }
 
-  const successRate = data.totalGen ? Math.round((data.successCount / Math.min(data.totalGen, 1000)) * 100) : 0;
+  const successRate = data.totalGen ? Math.round((data.successCount / data.totalGen) * 100) : 0;
 
   return (
     <div>

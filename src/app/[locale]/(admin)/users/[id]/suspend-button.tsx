@@ -14,6 +14,8 @@ const initial: ActionState = { success: false, message: "" };
 function SubmitButton({ isSuspended, pending }: { isSuspended: boolean; pending: boolean }) {
   const { pending: formPending } = useFormStatus();
   const isPending = pending || formPending;
+  const t = useTranslations("common");
+  const tu = useTranslations("users");
   const base = "inline-flex h-9 items-center gap-2 rounded-lg px-4 text-sm font-medium shadow-theme-xs transition disabled:cursor-not-allowed disabled:opacity-50";
   const tone = isSuspended
     ? "bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:ring-gray-700"
@@ -22,15 +24,15 @@ function SubmitButton({ isSuspended, pending }: { isSuspended: boolean; pending:
     <button type="submit" className={`${base} ${tone}`} disabled={isPending} aria-busy={isPending}>
       {isPending ? (
         <>
-          <Loader2 className="size-4 animate-spin" /> Memproses...
+          <Loader2 className="size-4 animate-spin" /> {t("processing")}
         </>
       ) : isSuspended ? (
         <>
-          <ShieldCheck className="size-4" /> Cabut Suspend
+          <ShieldCheck className="size-4" /> {tu("unsuspendUser")}
         </>
       ) : (
         <>
-          <ShieldOff className="size-4" /> Suspend
+          <ShieldOff className="size-4" /> {tu("suspendUser")}
         </>
       )}
     </button>
@@ -44,6 +46,7 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
   const [showUnsuspendToast, setShowUnsuspendToast] = React.useState(false);
   const [reason, setReason] = React.useState("");
   const t = useTranslations("common");
+  const tu = useTranslations("users");
 
   React.useEffect(() => {
     if (suspendState.message) {
@@ -68,8 +71,8 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
       <div className="space-y-3">
         <Alert
           variant="warning"
-          title="Pengguna sedang disuspend"
-          message={`${bannedUntil ? `Sampai ${new Date(bannedUntil).toLocaleString("id-ID")}. ` : ""}Pengguna tidak dapat login atau generate stiker selama suspend.`}
+          title={tu("userIsSuspended")}
+          message={`${bannedUntil ? `${tu("bannedUntil")} ${new Date(bannedUntil).toLocaleString()}. ` : ""}${tu("userSuspendedWarning")}`}
         />
         {showUnsuspendToast && unsuspendState.message && (
           <Alert
@@ -100,11 +103,11 @@ export function SuspendSection({ id, isSuspended, bannedUntil }: { id: string; i
       <form action={suspendAction} className="space-y-2">
         <input type="hidden" name="id" value={id} />
         <div>
-          <FormLabel>Alasan suspend (opsional)</FormLabel>
-          <TextInput name="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Misal: spam, abuse" disabled={suspendPending} />
+          <FormLabel>{tu("suspendReason")}</FormLabel>
+          <TextInput name="reason" value={reason} onChange={(e) => setReason(e.target.value)} placeholder={tu("suspendReasonPlaceholder")} disabled={suspendPending} />
         </div>
         <SubmitButton isSuspended={false} pending={suspendPending} />
-        <p className="text-xs text-gray-500 dark:text-gray-400">Suspend akan memblokir login selama ~10 tahun (bisa dicabut kapan saja).</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">{tu("suspendDurationNotice")}</p>
       </form>
     </div>
   );

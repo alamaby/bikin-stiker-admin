@@ -12,14 +12,14 @@ describe("NotificationDropdown", () => {
   it("shows the empty state when there are no items", async () => {
     const user = userEvent.setup();
     renderWithIntl(<NotificationDropdown items={[]} locale="id" />);
-    await user.click(screen.getByRole("button", { name: "Notifications" }));
+    await user.click(screen.getByRole("button", { name: /Notifikasi|Notifications/i }));
     expect(screen.getByText(/Tidak ada generasi gagal/)).toBeInTheDocument();
   });
 
   it("lists notifications with count and a locale-aware view-all link", async () => {
     const user = userEvent.setup();
     renderWithIntl(<NotificationDropdown items={ITEMS} locale="id" />);
-    await user.click(screen.getByRole("button", { name: "Notifications" }));
+    await user.click(screen.getByRole("button", { name: /Notifikasi|Notifications/i }));
     expect(screen.getByText(/Notifikasi/)).toBeInTheDocument();
     expect(screen.getByText("pixazo / flux")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Lihat Semua Log Gagal/ })).toHaveAttribute(
@@ -31,7 +31,7 @@ describe("NotificationDropdown", () => {
   it("closes on the close button", async () => {
     const user = userEvent.setup();
     renderWithIntl(<NotificationDropdown items={ITEMS} locale="id" />);
-    await user.click(screen.getByRole("button", { name: "Notifications" }));
+    await user.click(screen.getByRole("button", { name: /Notifikasi|Notifications/i }));
     await user.click(screen.getByRole("button", { name: "Close notifications" }));
     expect(screen.queryByText("pixazo / flux")).not.toBeInTheDocument();
   });

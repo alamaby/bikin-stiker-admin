@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/supabase/auth-guard";
 
 export type ActionState = { success: boolean; message: string };
 
@@ -16,6 +17,10 @@ export async function suspendUser(_prev: ActionState, formData: FormData): Promi
   const reason = String(formData.get("reason") ?? "").trim();
   if (!id) return { success: false, message: "Missing id" };
   try {
+    const adminUser = await requireAdmin();
+    if (adminUser.id === id) {
+      return { success: false, message: "Tidak dapat men-suspend akun sendiri" };
+    }
     const supabase = await getServiceClient();
     // Ban for 10 years (87600h) as "suspend indefinitely"
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +40,7 @@ export async function unsuspendUser(_prev: ActionState, formData: FormData): Pro
   const id = String(formData.get("id") ?? "").trim();
   if (!id) return { success: false, message: "Missing id" };
   try {
+    await requireAdmin();
     const supabase = await getServiceClient();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await supabase.auth.admin.updateUserById(id, { ban_duration: "none" } as any);

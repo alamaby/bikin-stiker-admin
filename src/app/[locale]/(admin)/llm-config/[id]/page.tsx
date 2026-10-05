@@ -32,29 +32,34 @@ export default async function LlmConfigDetailPage({
   if (!c) notFound();
 
   const masked = t("masked");
+  const dateLocale = locale === "en" ? "en-US" : "id-ID";
 
   return (
     <div>
       <PageBreadcrumb pageTitle={`${c.provider_name} / ${c.model_name}`} homeHref={buildLocaleHref(locale, "/llm-config")} homeLabel={tc("home")} />
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <Link href={buildLocaleHref(locale, "/llm-config")} className={toolbarBtn(false)}>
-          <ArrowLeft className="size-4" /> Back
+          <ArrowLeft className="size-4" /> {tc("back")}
         </Link>
-        <TailBadge variant={c.is_active ? "light" : "light"} color={c.is_active ? "success" : "light"}>{c.is_active ? "active" : "inactive"}</TailBadge>
+        <TailBadge variant="light" color={c.is_active ? "success" : "light"}>
+          {c.is_active ? tc("active") : tc("inactive")}
+        </TailBadge>
         <TailBadge color="light">{c.route_scope}</TailBadge>
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link href={buildLocaleHref(locale, `/llm-logs?config_id=${c.id}`)} className={toolbarBtn(true)}>
-          <ScrollText className="size-4" /> Lihat Log untuk config ini
+          <ScrollText className="size-4" /> {t("viewLogsForConfig")}
         </Link>
-        <span className="text-xs text-gray-500 dark:text-gray-400">— menampilkan attempt + enhancement yang pakai config ini</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{t("viewLogsDetail")}</span>
       </div>
 
       <div className="mb-4 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="px-6 py-5">
-          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">Detail & Edit</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">ID {c.id.slice(0, 8)}... · created {c.created_at ? new Date(c.created_at).toLocaleString() : "—"}</p>
+          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">{t("detailAndEdit")}</h3>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            ID {c.id.slice(0, 8)}... · {t("created")} {c.created_at ? new Date(c.created_at).toLocaleString(dateLocale) : "—"}
+          </p>
         </div>
         <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
           <DetailForm config={c} locale={locale} masked={masked} />
@@ -63,7 +68,7 @@ export default async function LlmConfigDetailPage({
 
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="px-6 py-5">
-          <h3 className="text-sm font-medium text-gray-800 dark:text-white/90">Raw</h3>
+          <h3 className="text-sm font-medium text-gray-800 dark:text-white/90">{t("raw")}</h3>
         </div>
         <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">
           <pre className="overflow-auto rounded-lg bg-gray-50 p-3 text-xs text-gray-700 dark:bg-white/5 dark:text-gray-300">{JSON.stringify(c, null, 2)}</pre>

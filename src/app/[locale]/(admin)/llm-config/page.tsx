@@ -297,6 +297,8 @@ export default async function LlmConfigPage({
             pageSize={perPage}
             summary={(tot, shown, pg) => `${tot} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
             getHref={(p) => preserve({ page: String(p) })}
+            prevLabel={tc("prev")}
+            nextLabel={tc("next")}
           />
         </div>
       )}

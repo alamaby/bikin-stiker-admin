@@ -15,27 +15,29 @@ Format version: 1
   - Dep `recharts@2.15.4` ditambahkan.
 - Fitur: paginasi DB-side + sorting + filter 8 field (q/status/provider/model/rating/flagged/date), thumbnail via signed URL, download, copy final_prompt, badge status+flag, detail page 8 section (preview/prompt/performance/rating/moderation/raw), server action flag/unflag dengan modal confirm.
 - Migrasi kolom moderasi dibuat: `supabase/migrations/20260922000001_sticker_moderation_flag.sql` (belum di-apply ke remote — lihat OPEN-2).
-- Test suite: 20 test files / 117 tests hijau.
-- `npm run lint` bersih (2 warnings for `<img>` yang disengaja).
-- `npm run build` lolos: 15 routes (+2 new: `/[locale]/stickers`, `/[locale]/stickers/[id]`).
-- Sidebar sudah ditambahkan item "Stiker" di antara LLM Logs dan Presets.
-
-## Active Decisions
-- Download via signed URL 60dtk (list) / 300dtk (detail); tidak ada retry otomatis (keputusan sadar — refresh halaman jika kedaluwarsa).
-- Filter rating per-halaman (bukan DB-wide count) — documented di UI sebagai keterbatasan.
-- Provider di filter bar hardcode 7 enum (sama seperti llm-logs) — OPEN-4.
-- `<img>` dipakai alih-alih `next/image` untuk menghindari perluasan `remotePatterns` di next.config (plan explicitly out of scope).
-
-## Open Items / Blockers
-- OPEN-1 (blocker penegakan, BUKAN blocker admin): query Flutter/Showcase belum filter `is_flagged=false`.
-- OPEN-2: migrasi `20260922000001_sticker_moderation_flag.sql` belum di-apply ke remote sebelum deploy.
-- OPEN-3: count pagination saat filter rating aktif hanya per-halaman, bukan akurat global.
-- OPEN-4: daftar provider di filter bar hardcode (bisa basi).
-
-## Legacy Archive
-- Tidak ada `PROJECT_MEMORY.md` — ini memori awal proyek.
+- Keamanan & otorisasi Server Actions (P0 Opsi A selesai):
+  - Helper `requireAdmin()` di `src/lib/supabase/auth-guard.ts` dipasang ke seluruh Server Actions (`stickers`, `llm-config`, `presets`, `users/[id]`).
+  - Bug inversi warna feedback jempol di `StickerSummary` diperbaiki (upPct -> success, downPct -> error), `<a>` diganti `<Link>`.
+  - Kebocoran `NEXT_PUBLIC_ADMIN_EMAILS` di client component `login/page.tsx` dihapus; otorisasi ditegakkan server-side.
+  - Test suite bertambah dari 117 menjadi 129 pengujian (23 test files), seluruhnya lulus hijau.
+- Kualitas kode, UI/UX, i18n & performa (P1 & P2 Opsi B selesai):
+  - Bug CSS class injection di `stickers/[id]/page.tsx` diperbaiki.
+  - A11y aria-label di `sticker-filter-bar.tsx` diselaraskan ke `pickDate`.
+  - Dead code query `image_generation_attempt_logs` di `stickers/page.tsx` dibersihkan.
+  - Notifikasi header kini mengarahkan ke link riil log kegagalan via SPA `<Link>`.
+  - Middleware dikonsolidasikan (menghapus double `getUser()`, short-circuit static assets & redirects).
+  - Skrip pencegahan dark mode FOUC ditambahkan di `<head>`.
+  - Konversi waktu WIB (+07:00) yang tepat dan locale-aware redirect pada `presets/actions.ts`.
+  - Standardisasi i18n menyeluruh (`messages/id.json` & `messages/en.json`) di seluruh halaman form, detail, dan komponen Pagination.
+  - Dependensi wildcard di `package.json` dikunci ke versi semver stabil.
+  - Test suite bertambah menjadi 132 tests (23 test files), 100% PASS.
+- Test suite: 23 test files / 132 tests hijau.
+- `npm run lint` bersih (0 error, 2 warnings for `<img>` yang disengaja).
+- `npm run build` lolos tanpa error (22 routes Turbopack).
 
 ## Recent Entries
+- [2026-10-05 UI/UX, Accessibility, i18n & Performance Polish (Opsi B)](2026-10-05/ui-ux-i18n-performance-polish-option-b.md)
+- [2026-10-05 Security hardening & critical bug fixes (Opsi A)](2026-10-05/security-and-bug-fixes-option-a.md)
 - [2026-09-23 Sticker page UX polish](2026-09-23/114000-sticker-page-ux-polish.md)
 - [2026-09-13 TailAdmin layout migration](2026-09-13/121300-tailadmin-layout-migration.md)
 - [2026-09-13 Follow-up: mobile + EN verification fixes](2026-09-13/followup-mobile-en-verification.md)

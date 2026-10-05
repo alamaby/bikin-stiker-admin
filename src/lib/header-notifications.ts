@@ -34,7 +34,7 @@ export async function getHeaderNotifications(locale: string): Promise<HeaderNoti
         title: `${failedAttempts} ${t("failedSummary")}`,
         detail: t("failedSummaryDetail"),
         time: t("summary"),
-        href: null,
+        href: `/${locale}/llm-logs?success=fail`,
         tone: "error",
       });
     }
@@ -51,7 +51,7 @@ export async function getHeaderNotifications(locale: string): Promise<HeaderNoti
         title: `${f.provider_name} / ${f.model_name}`,
         detail: (f.error_message ?? "failed").slice(0, 80),
         time,
-        href: null,
+        href: `/${locale}/llm-logs?success=fail&provider=${encodeURIComponent(f.provider_name)}`,
         tone: "error",
       });
     });

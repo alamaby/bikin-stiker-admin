@@ -50,7 +50,6 @@ type RowData = {
   completed_at: string | null;
   generation_duration_ms: number | null;
   signedUrl: string | null;
-  lastAttemptLatency: number | null;
   rating: number | null;
   reason_tags: string[] | null;
 };
@@ -97,18 +96,13 @@ async function getStickers(filters: ReturnType<typeof parseStickerParams>) {
   const ids = rows.map((r) => r.id as string);
 
   const feedbackMap = new Map<string, { rating: number; reason_tags: string[]; note: string }>();
-  const attemptMap = new Map<string, number>();
   if (ids.length > 0) {
-    const [{ data: fb }, { data: att }] = await Promise.all([
-      supabase.from("sticker_generation_feedback").select("sticker_generation_id,rating,reason_tags,note").in("sticker_generation_id", ids),
-      supabase.from("image_generation_attempt_logs").select("sticker_generation_id,latency_ms,attempt_index").in("sticker_generation_id", ids),
-    ]);
+    const { data: fb } = await supabase
+      .from("sticker_generation_feedback")
+      .select("sticker_generation_id,rating,reason_tags,note")
+      .in("sticker_generation_id", ids);
     fb?.forEach((f) => {
       feedbackMap.set(f.sticker_generation_id, { rating: f.rating, reason_tags: (f.reason_tags as string[]) ?? [], note: f.note ?? "" });
-    });
-    att?.forEach((a) => {
-      const cur = attemptMap.get(a.sticker_generation_id);
-      if (cur == null || (a.attempt_index as number) >= cur) attemptMap.set(a.sticker_generation_id, a.attempt_index as number);
     });
   }
 
@@ -153,7 +147,6 @@ async function getStickers(filters: ReturnType<typeof parseStickerParams>) {
       completed_at: r.completed_at as string | null,
       generation_duration_ms: r.generation_duration_ms as number | null,
       signedUrl: signedUrls.get(rid) ?? null,
-      lastAttemptLatency: attemptMap.has(rid) ? null : null,
       rating: fb?.rating ?? null,
       reason_tags: fb?.reason_tags ?? null,
     };
@@ -478,6 +471,8 @@ export default async function StickersPage({
               pageSize={PER_PAGE}
               summary={(tot, shown, pg) => `${tot} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
               getHref={(p) => buildStickersUrl(locale, { ...filters, page: p })}
+              prevLabel={tc("prev")}
+              nextLabel={tc("next")}
             />
           </div>
         </>

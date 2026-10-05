@@ -394,6 +394,8 @@ export default async function LlmLogsPage({
               pageSize={perPage}
               summary={(total, shown, pg) => `${total} ${tf("total")} · ${shown} ${tf("onPage")} ${pg}`}
               getHref={(p) => buildUrl(locale, { q, provider, success, type, config_id, preset, date_from, date_to, sort, order, page: String(p) })}
+              prevLabel={tc("prev")}
+              nextLabel={tc("next")}
             />
           </div>
         </>

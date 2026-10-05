@@ -11,11 +11,15 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-function getValidStatus(p: Record<string, unknown> & { is_active: boolean; valid_from: string | null; valid_until: string | null }, now = new Date()) {
-  if (!p.is_active) return { key: "inactive", label: "Nonaktif", color: "light" as const };
-  if (p.valid_from && new Date(p.valid_from) > now) return { key: "scheduled", label: "Terjadwal", color: "light" as const };
-  if (p.valid_until && new Date(p.valid_until) < now) return { key: "expired", label: "Kedaluwarsa", color: "error" as const };
-  return { key: "active", label: "Aktif", color: "success" as const };
+function getValidStatus(
+  p: Record<string, unknown> & { is_active: boolean; valid_from: string | null; valid_until: string | null },
+  tp: (k: "statusInactive" | "statusScheduled" | "statusExpired" | "statusActive") => string,
+  now = new Date(),
+) {
+  if (!p.is_active) return { key: "inactive", label: tp("statusInactive"), color: "light" as const };
+  if (p.valid_from && new Date(p.valid_from) > now) return { key: "scheduled", label: tp("statusScheduled"), color: "light" as const };
+  if (p.valid_until && new Date(p.valid_until) < now) return { key: "expired", label: tp("statusExpired"), color: "error" as const };
+  return { key: "active", label: tp("statusActive"), color: "success" as const };
 }
 
 function formatWIB(iso: string | null) {
@@ -40,16 +44,18 @@ async function getPreset(id: string) {
 export default async function PresetDetailPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
   const tc = await getTranslations({ locale, namespace: "common" });
+  const tp = await getTranslations({ locale, namespace: "presets" });
   const p = await getPreset(id);
   if (!p) notFound();
-  const st = getValidStatus(p);
+  const st = getValidStatus(p, tp);
+  const dateLocale = locale === "en" ? "en-US" : "id-ID";
 
   return (
     <div>
       <PageBreadcrumb pageTitle={p.label} homeHref={buildLocaleHref(locale, "/presets")} homeLabel={tc("home")} />
       <div className="mb-6 flex flex-wrap items-center gap-2">
         <Link href={buildLocaleHref(locale, "/presets")} className={toolbarBtn(false)}>
-          <ArrowLeft className="size-4" /> Kembali
+          <ArrowLeft className="size-4" /> {tc("back")}
         </Link>
         <span className="text-xl">{p.emoji ?? ""}</span>
         <h1 className="text-xl font-semibold text-gray-800 dark:text-white/90">{p.label}</h1>
@@ -59,13 +65,13 @@ export default async function PresetDetailPage({ params }: { params: Promise<{ l
 
       <div className="mb-4 flex flex-wrap items-center gap-2 rounded-2xl border border-gray-200 bg-white p-3 text-sm dark:border-gray-800 dark:bg-white/[0.03]">
         <span className="font-mono text-xs text-gray-700 dark:text-gray-300">{p.id}</span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">sort {p.sort_order}</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{tp("sortOrder")} {p.sort_order}</span>
         <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
           <Calendar className="size-3.5" /> {formatWIB(p.valid_from)} → {formatWIB(p.valid_until)}
         </span>
         <div className="ml-auto flex gap-2">
           <Link href={buildLocaleHref(locale, `/llm-logs?preset=${p.id}`)} className={toolbarBtn(false)}>
-            <ScrollText className="size-4" /> Lihat Log LLM untuk preset ini
+            <ScrollText className="size-4" /> {tp("viewLlmLogs")}
           </Link>
           <DeleteButton id={p.id} />
         </div>
@@ -73,9 +79,9 @@ export default async function PresetDetailPage({ params }: { params: Promise<{ l
 
       <div className="mb-4 rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="px-6 py-5">
-          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">Detail & Edit</h3>
+          <h3 className="text-base font-medium text-gray-800 dark:text-white/90">{tp("detailAndEdit")}</h3>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Dibuat {p.created_at ? new Date(p.created_at).toLocaleString("id-ID") : "—"} · Diperbarui {p.updated_at ? new Date(p.updated_at).toLocaleString("id-ID") : "—"}
+            {tp("created")} {p.created_at ? new Date(p.created_at).toLocaleString(dateLocale) : "—"} · {tp("updated")} {p.updated_at ? new Date(p.updated_at).toLocaleString(dateLocale) : "—"}
           </p>
         </div>
         <div className="border-t border-gray-100 p-4 dark:border-gray-800 sm:p-6">

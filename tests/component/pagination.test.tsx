@@ -34,4 +34,10 @@ describe("Pagination", () => {
     render(<Pagination {...props} page={2} />);
     expect(screen.getByText("51 total · 12 on page 2")).toBeInTheDocument();
   });
+
+  it("renders custom localized prevLabel and nextLabel", () => {
+    render(<Pagination {...props} page={2} prevLabel="Sebelumnya" nextLabel="Berikutnya" />);
+    expect(screen.getByText("Sebelumnya")).toBeInTheDocument();
+    expect(screen.getByText("Berikutnya")).toBeInTheDocument();
+  });
 });

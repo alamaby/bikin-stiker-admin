@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { createServerClient } from "@supabase/ssr";
 import { locales, defaultLocale } from "@/i18n/config";
 
 function getLocaleFromRequest(request: NextRequest): string {
@@ -12,7 +11,6 @@ function getLocaleFromRequest(request: NextRequest): string {
 }
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
   const pathname = request.nextUrl.pathname;
 
   // Skip static assets
@@ -22,7 +20,7 @@ export async function middleware(request: NextRequest) {
     pathname.includes(".") ||
     pathname.startsWith("/supabase")
   ) {
-    return response;
+    return NextResponse.next();
   }
 
   // Locale handling – redirect if missing locale prefix
@@ -45,45 +43,28 @@ export async function middleware(request: NextRequest) {
   const locale = segments[1];
   const isLogin = pathname === `/${locale}/login` || pathname.endsWith("/login");
   const isUnauthorized = pathname.includes("/unauthorized");
+
+  // Single Supabase round-trip: update session and retrieve authenticated user
+  const { response, user } = await updateSession(request);
+
   if (isLogin || isUnauthorized) return response;
 
   // Check auth for all other /[locale]/* routes
   if (hasLocale) {
-    const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const key =
-      process.env.SUPABASE_PUBLISHABLE_KEY ??
-      process.env.SUPABASE_ANON_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (url && key) {
-      const supabase = createServerClient(url, key, {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll();
-          },
-          setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
-          },
-        },
-      });
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        const loginUrl = request.nextUrl.clone();
-        loginUrl.pathname = `/${locale}/login`;
-        loginUrl.searchParams.set("next", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-      const allow = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? process.env.ADMIN_EMAILS ?? "")
-        .split(",")
-        .map((s) => s.trim().toLowerCase())
-        .filter(Boolean);
-      if (!allow.includes((user.email ?? "").toLowerCase())) {
-        const url2 = request.nextUrl.clone();
-        url2.pathname = `/${locale}/unauthorized`;
-        return NextResponse.redirect(url2);
-      }
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = `/${locale}/login`;
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    const allow = (process.env.ADMIN_EMAILS ?? process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
+      .split(",")
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+    if (!allow.includes((user.email ?? "").toLowerCase())) {
+      const url2 = request.nextUrl.clone();
+      url2.pathname = `/${locale}/unauthorized`;
+      return NextResponse.redirect(url2);
     }
   }
 

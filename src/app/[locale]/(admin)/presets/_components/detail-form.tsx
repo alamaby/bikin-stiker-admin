@@ -17,11 +17,12 @@ const initialState: ActionState = { success: false, message: "" };
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
+  const t = useTranslations("common");
   return (
     <button type="submit" className={filterSubmitBtn} disabled={pending} aria-busy={pending}>
       {pending ? (
         <>
-          <Loader2 className="size-4 animate-spin" /> Menyimpan...
+          <Loader2 className="size-4 animate-spin" /> {t("saving")}
         </>
       ) : (
         label
@@ -34,6 +35,7 @@ export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: st
   const [state, formAction, isPending] = useActionState(upsertPresetWithState, initialState);
   const [showToast, setShowToast] = React.useState(false);
   const t = useTranslations("common");
+  const tp = useTranslations("presets");
 
   React.useEffect(() => {
     if (state.message) {
@@ -59,12 +61,15 @@ export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: st
       )}
 
       <form action={formAction} className="grid gap-4 md:grid-cols-2">
+        <input type="hidden" name="locale" value={locale} />
         <div>
-          <FormLabel>ID * {isNew ? "" : "(tidak dapat diubah)"}</FormLabel>
+          <FormLabel>
+            {tp("id")} * {isNew ? "" : tp("idCannotBeChanged")}
+          </FormLabel>
           <TextInput name="id" defaultValue={p?.id ?? ""} placeholder="e.g. kawaii" required readOnly={!isNew} className={!isNew ? "bg-gray-50 dark:bg-white/5" : ""} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Label *</FormLabel>
+          <FormLabel>{tp("label")} *</FormLabel>
           <TextInput name="label" defaultValue={p?.label ?? ""} required disabled={isPending} />
         </div>
         <div className="md:col-span-2">
@@ -72,11 +77,11 @@ export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: st
           <TextInput name="description" defaultValue={p?.description ?? ""} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Emoji</FormLabel>
+          <FormLabel>{tp("emoji")}</FormLabel>
           <TextInput name="emoji" defaultValue={p?.emoji ?? ""} placeholder="🎨" disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Role</FormLabel>
+          <FormLabel>{tp("role")}</FormLabel>
           <SelectInput name="required_role" defaultValue={p?.required_role ?? "free"} disabled={isPending}>
             <option value="guest">guest</option>
             <option value="free">free</option>
@@ -84,37 +89,37 @@ export function DetailForm({ preset, locale, isNew }: { preset?: any; locale: st
           </SelectInput>
         </div>
         <div className="md:col-span-2">
-          <FormLabel>Style Descriptor *</FormLabel>
+          <FormLabel>{tp("styleDescriptor")} *</FormLabel>
           <TextInput name="style_descriptor" defaultValue={p?.style_descriptor ?? ""} required placeholder="kawaii cute pastel chibi cartoon" disabled={isPending} />
         </div>
         <div className="md:col-span-2">
-          <FormLabel>Reasoning Guidance</FormLabel>
+          <FormLabel>{tp("reasoningGuidance")}</FormLabel>
           <TextInput name="reasoning_guidance" defaultValue={p?.reasoning_guidance ?? ""} placeholder="Always include pastel colors..." disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Sort Order</FormLabel>
+          <FormLabel>{tp("sortOrder")}</FormLabel>
           <TextInput name="sort_order" type="number" defaultValue={p?.sort_order ?? 100} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Cost Override</FormLabel>
+          <FormLabel>{tp("costOverride")}</FormLabel>
           <TextInput name="cost_override" type="number" defaultValue={p?.cost_override ?? ""} placeholder="1" disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Valid From (WIB)</FormLabel>
+          <FormLabel>{tp("validFromWib")}</FormLabel>
           <TextInput name="valid_from" type="datetime-local" defaultValue={p?.valid_from ? new Date(new Date(p.valid_from).getTime() + 7 * 3600 * 1000).toISOString().slice(0, 16) : ""} disabled={isPending} />
         </div>
         <div>
-          <FormLabel>Valid Until (WIB)</FormLabel>
+          <FormLabel>{tp("validUntilWib")}</FormLabel>
           <TextInput name="valid_until" type="datetime-local" defaultValue={p?.valid_until ? new Date(new Date(p.valid_until).getTime() + 7 * 3600 * 1000).toISOString().slice(0, 16) : ""} disabled={isPending} />
         </div>
         <div className="flex items-center gap-2">
           <CheckBox name="is_active" defaultChecked={p?.is_active ?? true} disabled={isPending} />
-          <FormLabel className="mb-0">Aktif</FormLabel>
+          <FormLabel className="mb-0">{tp("active")}</FormLabel>
         </div>
         <div className="flex gap-2 md:col-span-2">
-          <SubmitButton label={isNew ? "Buat Preset" : "Simpan"} />
+          <SubmitButton label={isNew ? tp("createPresetBtn") : t("save")} />
           <Link href={buildLocaleHref(locale, "/presets")} className={toolbarBtn(false)}>
-            Batal
+            {t("cancel")}
           </Link>
         </div>
       </form>

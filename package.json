@@ -11,19 +11,19 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@supabase/ssr": "*",
-    "@supabase/supabase-js": "*",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/forms": "^0.5.11",
-    "clsx": "*",
-    "lucide-react": "*",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.38.0",
     "next": "16.3.4",
-    "next-intl": "*",
+    "next-intl": "^4.14.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "recharts": "^2.15.4",
-    "server-only": "*",
-    "tailwind-merge": "*",
-    "zod": "*"
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
